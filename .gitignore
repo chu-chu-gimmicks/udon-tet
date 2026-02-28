@@ -9,5 +9,3 @@
 
 # Script配下の対象拡張子を許可
 !Script/**/*.cs
-!Script/**/*.meta
-!Script/**/*.asset
