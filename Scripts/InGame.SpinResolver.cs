@@ -74,23 +74,22 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void SR_ResolveSpin(Vector2Int[] minoPos, out bool hasAppliedSpin)
+        private bool SR_ResolveSpin(Vector2Int[] minoPos)
         {
-            hasAppliedSpin = false;
-
-            if (!_SR_NeedsSpin(out bool isClockwise)) { return; }
-            if (!GS_CanReflectInput()) { return; }
-            if (CurrentMinoType == MinoType.O) { return; }
+            if (!_SR_NeedsSpin(out bool isClockwise)) { return false; }
+            if (!GS_CanReflectInput()) { return false; }
+            if (CurrentMinoType == MinoType.O) { return false; }
 
             CopyMino(minoPos, _SR_minoBuffer);
             _SR_ApplyBaseSpin(CurrentMinoType, minoPos, _SR_minoBuffer, isClockwise);
             bool success = _SR_TryApplySRS(CurrentMinoType, _SR_minoBuffer, isClockwise, Angle);
             if (success)
             {
-                hasAppliedSpin = true;
                 Angle += isClockwise ? -90 : 90;
                 CopyMino(_SR_minoBuffer, minoPos);
+                return true;
             }
+            return false;
         }
 
 

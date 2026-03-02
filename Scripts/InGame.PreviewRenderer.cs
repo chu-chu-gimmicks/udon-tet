@@ -28,8 +28,6 @@ namespace ChuChuGimmicks.UDONTET
         {
             _PR_HideAllHoldBlock();
 
-            if (minoType == MinoType.None) { return; } // 必要？
-
             MS_GetMino(_PR_minoBuffer, minoType);
             for (int i = 0; i < _PR_minoBuffer.Length; i++)
             {
@@ -64,8 +62,6 @@ namespace ChuChuGimmicks.UDONTET
 
             for (int i = 0; i < minoQueue.Length; i++)
             {
-                if (minoQueue[i] == MinoType.None) { continue; } // 必要？
-
                 MS_GetMino(_PR_minoBuffer, minoQueue[i]);
                 for (int j = 0; j < _PR_minoBuffer.Length; j++)
                 {

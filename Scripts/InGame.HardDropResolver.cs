@@ -21,12 +21,10 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void HDR_ResolveHardDrop(Vector2Int[] minoPos, out bool hasAppliedHardDrop)
+        private bool HDR_ResolveHardDrop(Vector2Int[] minoPos)
         {
-            hasAppliedHardDrop = false;
-
-            if (!_HDR_NeedsHardDrop()) { return; }
-            if (!GS_CanReflectInput()) { return; }
+            if (!_HDR_NeedsHardDrop()) { return false; }
+            if (!GS_CanReflectInput()) { return false; }
 
             CopyMino(minoPos, _HDR_minoBuffer);
             while (G_CanMoveDown(_HDR_minoBuffer))
@@ -35,7 +33,7 @@ namespace ChuChuGimmicks.UDONTET
             }
             CopyMino(_HDR_minoBuffer, minoPos);
 
-            hasAppliedHardDrop = true;
+            return true;
         }
 
 

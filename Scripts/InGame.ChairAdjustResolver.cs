@@ -19,7 +19,7 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void CAR_ResolveChairAdjust()
+        private bool CAR_ResolveChairAdjust()
         {
             Vector3 dir;
             AxisState inputState = RVInputState;
@@ -27,7 +27,7 @@ namespace ChuChuGimmicks.UDONTET
             {
                 case AxisState.Negative: dir = Vector3.down; break;
                 case AxisState.Positive: dir = Vector3.up;   break;
-                default: return;
+                default: return false;
             }
 
             float speed = Networking.LocalPlayer.IsUserInVR() ? _CAR_SPEED_VR * Time.deltaTime : _CAR_SPEED_DESKTOP;
@@ -36,10 +36,11 @@ namespace ChuChuGimmicks.UDONTET
             if ((dir.y > 0 && newHeight > chairUpperLimit.localPosition.y) ||
                 (dir.y < 0 && newHeight < chairLowerLimit.localPosition.y))
             {
-                return;
+                return false;
             }
 
             station.transform.localPosition = new Vector3(0, newHeight, 0);
+            return true;
         }
     }
 }

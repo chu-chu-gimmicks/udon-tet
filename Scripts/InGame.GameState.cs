@@ -15,13 +15,13 @@ namespace ChuChuGimmicks.UDONTET
     }
 
 
-    public enum ClearState : int
+    public enum ClearAnimationState : int
     {
         Idle,
-        Start,
         Cleaning,
-        ShiftDown,
-        Finish
+        Shifting,
+        Finishing,
+        Completed
     }
 
 
@@ -36,24 +36,24 @@ namespace ChuChuGimmicks.UDONTET
                 _currentGameState = value;
                 if (_currentGameState != GameState.Playing)
                 {
-                    CurrentClearState = ClearState.Idle;
+                    CurrentClearAnimState = ClearAnimationState.Idle;
                 }
             }
         }
 
-        private ClearState _currentClearState = ClearState.Idle;
-        private ClearState CurrentClearState
+        private ClearAnimationState _currentClearAnimState = ClearAnimationState.Idle;
+        private ClearAnimationState CurrentClearAnimState
         {
-            get { return _currentClearState; }
+            get { return _currentClearAnimState; }
             set
             {
                 if (CurrentGameState == GameState.Playing)
                 {
-                    _currentClearState = value;
+                    _currentClearAnimState = value;
                 }
                 else
                 {
-                    _currentClearState = ClearState.Idle;
+                    _currentClearAnimState = ClearAnimationState.Idle;
                 }
             }
         }
@@ -90,7 +90,7 @@ namespace ChuChuGimmicks.UDONTET
 
         private bool GS_CanReflectInput()
         {
-            if (CurrentGameState == GameState.Playing && CurrentClearState == ClearState.Idle && Networking.IsOwner(this.gameObject))
+            if (CurrentGameState == GameState.Playing && CurrentClearAnimState == ClearAnimationState.Idle && Networking.IsOwner(this.gameObject))
             {
                 return true;
             }

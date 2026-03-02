@@ -28,20 +28,21 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void SDR_ResolveSoftDrop()
+        private bool SDR_ResolveSoftDrop()
         {
-            if (!_SDR_HasChangedSoftDropState(out _SoftDropActive softDropState)) { return; }
-            if (!GS_CanReflectSoftDrop()) { return; }
+            if (!_SDR_HasChangedSoftDropState(out _SoftDropActive softDropState)) { return false; }
+            if (!GS_CanReflectSoftDrop()) { return false; }
 
-            if (softDropState == _SoftDropActive.Active)
+            if (softDropState == _SoftDropActive.Inactive)
+            {
+                D_UpdateDropSpeed();
+            }
+            else
             {
                 D_interval = Mathf.Min(D_interval, _SDR_SOFTDROP_INTERVAL);
                 D_timer += D_interval;
             }
-            else if (softDropState == _SoftDropActive.Inactive)
-            {
-                D_UpdateDropSpeed();
-            }
+            return true;
         }
 
 

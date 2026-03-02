@@ -6,6 +6,18 @@ using VRC.Udon;
 
 namespace ChuChuGimmicks.UDONTET
 {
+    public enum PlayerAction : int
+    {
+        None        = 0,
+        Move        = 1,
+        Spin        = 2,
+        SoftDrop    = 4,
+        HardDrop    = 8,
+        FirstHold   = 16,
+        Hold        = 32,
+        ChairAdjust = 64
+    }
+
     public partial class InGame
     {
         public bool ReflectOnlyInCollider { get; set; } = true;
@@ -109,22 +121,28 @@ namespace ChuChuGimmicks.UDONTET
         {
             if (!Networking.IsOwner(this.gameObject)) { return; }
             if (CurrentGameState != GameState.Playing) { return; }
-            if (CurrentClearState != ClearState.Idle)
+            if (CurrentClearAnimState != ClearAnimationState.Idle)
             {
-                if (CurrentClearState == ClearState.Finish)
+                if (CurrentClearAnimState == ClearAnimationState.Completed)
                 {
-                    _GL_Spawn();
-                    UI_Update();
-                    CurrentClearState = ClearState.Idle;
+                    _GL_SpawnAfterAnimation();
                 }
                 return;
             }
 
             CopyMino(currentMinoPos, _GL_minoBuffer);
 
-            _GL_ResolveInput(out bool hasAppliedHardDrop);
+            int actions = _GL_ResolveInput();
 
-            if (hasAppliedHardDrop)
+            if ((actions & (int)PlayerAction.FirstHold) != 0)
+            {
+                _GL_Spawn();
+            }
+            else if ((actions & (int)PlayerAction.Hold) != 0)
+            {
+                _GL_SpawnBySubsequentHold();
+            }
+            else if ((actions & (int)PlayerAction.HardDrop) != 0)
             {
                 _GL_LockDown();
             }
@@ -139,59 +157,56 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void _GL_ResolveInput(out bool needsToSkipDrop)
+        private int _GL_ResolveInput()
         {
-            needsToSkipDrop = false;
+            int actions = 0;
 
-            MR_ResolveMove(currentMinoPos, out bool hasAppliedMove);
-            SR_ResolveSpin(currentMinoPos, out bool hasAppliedSpin);
+            if (MR_ResolveMove(currentMinoPos))      { actions |= (int)PlayerAction.Move; }
+            if (SR_ResolveSpin(currentMinoPos))      { actions |= (int)PlayerAction.Spin; }
+            if (SDR_ResolveSoftDrop())               { actions |= (int)PlayerAction.SoftDrop; }
+            if (HDR_ResolveHardDrop(currentMinoPos)) { actions |= (int)PlayerAction.HardDrop; }
 
-            SDR_ResolveSoftDrop();
-            HDR_ResolveHardDrop(currentMinoPos, out bool hasAppliedHardDrop);
+            if (HR_ResolveHold(currentMinoPos, out bool isFirstHold))
+            {
+                if (isFirstHold)
+                {
+                    actions |= (int)PlayerAction.FirstHold;
+                }
+                else
+                {
+                    actions |= (int)PlayerAction.Hold;
+                }
+            }
 
-            HR_ResolveHold(currentMinoPos, out bool hasAppliedHold);
-
-            CAR_ResolveChairAdjust();
+            if (CAR_ResolveChairAdjust()) { actions |= (int)PlayerAction.ChairAdjust; }
 
             // 優先順位が大事
-            if (hasAppliedHardDrop)
+            if ((actions & (int)PlayerAction.Hold) != 0 || (actions & (int)PlayerAction.FirstHold) != 0)
             {
-                needsToSkipDrop = true;
-                GR_UpdateMino(currentMinoPos, CurrentMinoType, _GL_minoBuffer);
-                CopyMino(currentMinoPos, _GL_minoBuffer);
-                return;
+                GR_HideMino(_GL_minoBuffer);
+                PR_ShowHoldMino(HR_HoldMinoType);
+                return actions;
             }
 
-            if (hasAppliedHold)
+            if ((actions & (int)PlayerAction.HardDrop) == 0)
             {
-                CanHold = false;
-                DR_TSpin = TSpinState.None;
-                LC_Reset();
+                if ((actions & (int)PlayerAction.Move) != 0)
+                {
+                    DR_TSpin = TSpinState.None;
+                    LC_UpdateByInput(currentMinoPos);
+                }
 
-                needsToSkipDrop = true;
-                return;
+                if ((actions & (int)PlayerAction.Spin) != 0)
+                {
+                    LC_UpdateByInput(currentMinoPos);
+                }
             }
 
-            bool hasAnyInput = false;
+            GR_HideMino(_GL_minoBuffer);
+            GR_ShowMino(currentMinoPos, CurrentMinoType);
+            CopyMino(currentMinoPos, _GL_minoBuffer);
 
-            if (hasAppliedMove)
-            {
-                DR_TSpin = TSpinState.None;
-                hasAnyInput = true;
-            }
-
-            if (hasAppliedSpin)
-            {
-                hasAnyInput = true;
-            }
-
-            if (hasAnyInput)
-            {
-                LC_UpdateByInput(currentMinoPos);
-
-                GR_UpdateMino(currentMinoPos, CurrentMinoType, _GL_minoBuffer);
-                CopyMino(currentMinoPos, _GL_minoBuffer);
-            }
+            return actions;
         }
 
 
@@ -205,7 +220,8 @@ namespace ChuChuGimmicks.UDONTET
 
                 LC_UpdateByDrop(currentMinoPos);
 
-                GR_UpdateMino(currentMinoPos, CurrentMinoType, _GL_minoBuffer);
+                GR_HideMino(_GL_minoBuffer);
+                GR_ShowMino(currentMinoPos, CurrentMinoType);
                 CopyMino(currentMinoPos, _GL_minoBuffer);
             }
         }
@@ -226,7 +242,7 @@ namespace ChuChuGimmicks.UDONTET
                     D_UpdateDropSpeed();
                 }
 
-                CurrentClearState = ClearState.Start;
+                GA_AnimateClear();
             }
             else
             {
@@ -243,12 +259,6 @@ namespace ChuChuGimmicks.UDONTET
             CanHold = true;
             DR_TSpin = TSpinState.None;
             LC_Reset();
-        }
-
-
-        private void _GL_AnimateClear()
-        {
-            GA_AnimateClear();
         }
 
 
@@ -272,8 +282,39 @@ namespace ChuChuGimmicks.UDONTET
         private void _GL_Spawn()
         {
             CurrentMinoType = S_SpawnMino(currentMinoPos);
-            GR_UpdateMino(currentMinoPos, CurrentMinoType);
+            GR_ShowMino(currentMinoPos, CurrentMinoType);
             Angle = 0;
+
+            CanHold = true;
+            DR_TSpin = TSpinState.None;
+            LC_Reset();
+        }
+
+
+        private  void _GL_SpawnBySubsequentHold()
+        {
+            S_SetMino(currentMinoPos, CurrentMinoType);
+            GR_ShowMino(currentMinoPos, CurrentMinoType);
+            Angle = 0;
+
+            CanHold = true;
+            DR_TSpin = TSpinState.None;
+            LC_Reset();
+        }
+
+
+        private void _GL_SpawnAfterAnimation()
+        {
+            if (G_IsGameOver(currentMinoPos))
+            {
+                GL_OnGameOver();
+            }
+            else
+            {
+                _GL_Spawn();
+                UI_Update();
+                CurrentClearAnimState = ClearAnimationState.Idle;
+            }
         }
 
 

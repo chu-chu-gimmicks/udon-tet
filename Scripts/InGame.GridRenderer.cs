@@ -22,7 +22,7 @@ namespace ChuChuGimmicks.UDONTET
         {
             for (byte i = 0; i < gridRenderers.Length; i++)
             {
-                GR_UpdateBlock(i, MinoType.None);
+                GR_HideBlock(i);
             }
 
             for (int i = 0; i < _GR_ghostMino.Length; i++)
@@ -32,25 +32,14 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void GR_UpdateMino(Vector2Int[] newMino, MinoType newMinoType, Vector2Int[] oldMino = null)
-        {
-            if (Utilities.IsValid(oldMino))
-            {
-                _GR_HideMino(oldMino);
-                _GR_HideMino(_GR_ghostMino);
-            }
-            _GR_ShowMino(newMino, newMinoType);
-        }
-
-
-        private void _GR_ShowMino(Vector2Int[] minoPos, MinoType minoType)
+        private void GR_ShowMino(Vector2Int[] minoPos, MinoType minoType)
         {
             _GR_ShowGhostMino(minoPos, minoType);
 
             for (int i = 0; i < minoPos.Length; i++)
             {
                 byte idx = GetIndex(minoPos[i].x, minoPos[i].y);
-                GR_UpdateBlock(idx, minoType);
+                GR_ShowBlock(idx, minoType);
             }
         }
 
@@ -70,37 +59,36 @@ namespace ChuChuGimmicks.UDONTET
             for (int i = 0; i < _GR_minoBuffer.Length; i++)
             {
                 byte idx = GetIndex(_GR_minoBuffer[i].x, _GR_minoBuffer[i].y);
-                GR_UpdateBlock(idx, minoType, isGhost: true);
+                GR_ShowBlock(idx, minoType, isGhost: true);
             }
 
             CopyMino(_GR_minoBuffer, _GR_ghostMino);
         }
 
 
-        private void _GR_HideMino(Vector2Int[] minoPos)
+        private void GR_HideMino(Vector2Int[] minoPos)
         {
             for (int i = 0; i < minoPos.Length; i++)
             {
                 byte idx = GetIndex(minoPos[i].x, minoPos[i].y);
-                GR_UpdateBlock(idx, MinoType.None);
+                GR_HideBlock(idx);
             }
+
+            _GR_HideGhostMino();
         }
 
 
-        private void GR_UpdateBlock(byte idx, MinoType minoType, bool isGhost = false)
+        private void _GR_HideGhostMino()
         {
-            if (minoType == MinoType.None)
+            for (int i = 0; i < _GR_ghostMino.Length; i++)
             {
-                _GR_HideBlock(idx);
-            }
-            else
-            {
-                _GR_ShowBlock(idx, minoType, isGhost);
+                byte idx = GetIndex(_GR_ghostMino[i].x, _GR_ghostMino[i].y);
+                GR_HideBlock(idx);
             }
         }
 
 
-        private void _GR_ShowBlock(byte idx, MinoType minoType, bool isGhost = false)
+        private void GR_ShowBlock(byte idx, MinoType minoType, bool isGhost = false)
         {
             if (!_GR_IsIndexSafe(idx)) { return; }
             if (!_GR_IsMinoTypeSafe(minoType)) { return; }
@@ -113,7 +101,7 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void _GR_HideBlock(byte idx)
+        private void GR_HideBlock(byte idx)
         {
             if (!_GR_IsIndexSafe(idx)) { return; }
 

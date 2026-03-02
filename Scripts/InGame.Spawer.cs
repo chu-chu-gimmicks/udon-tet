@@ -32,7 +32,18 @@ namespace ChuChuGimmicks.UDONTET
             MinoType nextMinoType = S_minoQueue[0];
             if (nextMinoType == MinoType.None) { return nextMinoType; }
 
-            MS_GetMino(minoPos, nextMinoType);
+            S_SetMino(minoPos, nextMinoType);
+
+            S_UpdateMinoQueue();
+            PR_ShowQueue(S_minoQueue);
+
+            return nextMinoType;
+        }
+
+
+        private void S_SetMino(Vector2Int[] minoPos, MinoType minoType)
+        {
+            MS_GetMino(minoPos, minoType);
             for (int i = 0; i < minoPos.Length; i++)
             {
                 minoPos[i] += _S_INITIAL_POS;
@@ -46,11 +57,6 @@ namespace ChuChuGimmicks.UDONTET
                     minoPos[i] += Vector2Int.up;
                 }
             }
-
-            S_UpdateMinoQueue();
-            PR_ShowQueue(S_minoQueue);
-
-            return nextMinoType;
         }
 
 

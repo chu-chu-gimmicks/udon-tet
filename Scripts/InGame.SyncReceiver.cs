@@ -43,7 +43,7 @@ namespace ChuChuGimmicks.UDONTET
                     if (ReflectOnlyInCollider && !IsInCollider) { return; }
 
                     _SYR_SynchronizeGrid();
-                    GR_UpdateMino(currentMinoPos, CurrentMinoType);
+                    GR_ShowMino(currentMinoPos, CurrentMinoType);
                     PR_ShowHoldMino(HR_HoldMinoType);
                     PR_ShowQueue(S_minoQueue);
                     UI_Update();
@@ -108,7 +108,7 @@ namespace ChuChuGimmicks.UDONTET
             _SYR_SynchronizeGrid();
             if (CurrentGameState == GameState.Playing)
             {
-                GR_UpdateMino(currentMinoPos, CurrentMinoType);
+                GR_ShowMino(currentMinoPos, CurrentMinoType);
             }
             PR_ShowHoldMino(HR_HoldMinoType);
             PR_ShowQueue(S_minoQueue);
@@ -127,7 +127,7 @@ namespace ChuChuGimmicks.UDONTET
         {
             for (byte i = 0; i < G_grid.Length; i++)
             {
-                GR_UpdateBlock(i, G_grid[i]);
+                GR_ShowBlock(i, G_grid[i]);
             }
         }
 

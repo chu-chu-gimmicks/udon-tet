@@ -24,19 +24,20 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void HR_ResolveHold(Vector2Int[] minoPos, out bool hasAppliedHold)
+        private bool HR_ResolveHold(Vector2Int[] minoPos, out bool isFirstHold)
         {
-            hasAppliedHold = false;
+            isFirstHold = false;
 
-            if (!CanHold) { return; }
-            if (!_HR_NeedsHold()) { return; }
-            if (!GS_CanReflectInput()) { return; }
+            if (!CanHold) { return false; }
+            if (!_HR_NeedsHold()) { return false; }
+            if (!GS_CanReflectInput()) { return false; }
 
             CopyMino(minoPos, _HR_minoBuffer);
 
             if (HR_HoldMinoType == MinoType.None)
             {
                 HR_HoldMinoType = CurrentMinoType;
+                isFirstHold = true;
             }
             else
             {
@@ -44,6 +45,7 @@ namespace ChuChuGimmicks.UDONTET
                 HR_HoldMinoType = CurrentMinoType;
                 CurrentMinoType = tmp;
             }
+            return true;
         }
 
 

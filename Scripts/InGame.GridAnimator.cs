@@ -8,10 +8,10 @@ namespace ChuChuGimmicks.UDONTET
 {
     public partial class InGame
     {
-        private const float _GA_START_INTERVAL = 0.5f;
+        private const float _GA_START_DELAY = 0.5f;
         private const float _GA_CLEANING_INTERVAL = 0.05f;
-        private const float _GA_SHIFTDOWN_INTERVAL = 0.25f;
-        private const float _GA_FINISH_INTERVAL = 0.5f;
+        private const float _GA_SHIFTDOWN_DELAY = 0.25f;
+        private const float _GA_FINISH_DELAY = 0.25f;
 
         private int _GA_clearCount = 0;
 
@@ -42,39 +42,34 @@ namespace ChuChuGimmicks.UDONTET
 
         public void GA_AnimateClear()
         {
-            if (CurrentClearState == ClearState.Start)
+            if (CurrentClearAnimState == ClearAnimationState.Idle)
             {
-                CurrentClearState = ClearState.Cleaning;
-                SendCustomEventDelayedSeconds(nameof(GA_AnimateClear), _GA_START_INTERVAL);
-                return;
+                CurrentClearAnimState = ClearAnimationState.Cleaning;
+                SendCustomEventDelayedSeconds(nameof(GA_AnimateClear), _GA_START_DELAY);
             }
-            if (CurrentClearState == ClearState.Cleaning)
+            else if (CurrentClearAnimState == ClearAnimationState.Cleaning)
             {
-                _GA_AnimateClearStep(out bool isFinished);
+                bool isFinished = _GA_AnimateClearStep();
                 if (isFinished)
                 {
-                    CurrentClearState = ClearState.ShiftDown;
-                    SendCustomEventDelayedSeconds(nameof(GA_AnimateClear), _GA_SHIFTDOWN_INTERVAL);
+                    CurrentClearAnimState = ClearAnimationState.Shifting;
+                    SendCustomEventDelayedSeconds(nameof(GA_AnimateClear), _GA_SHIFTDOWN_DELAY);
                 }
                 else
                 {
-                    SendCustomEventDelayedSeconds(nameof(_GA_AnimateClearStep), _GA_CLEANING_INTERVAL);
+                    SendCustomEventDelayedSeconds(nameof(GA_AnimateClear), _GA_CLEANING_INTERVAL);
                 }
             }
-            else if (CurrentClearState == ClearState.ShiftDown)
+            else if (CurrentClearAnimState == ClearAnimationState.Shifting)
             {
                 _GA_AnimateShiftDown();
-                GA_Reset();
-                CurrentClearState = ClearState.Finish;
-                SendCustomEventDelayedSeconds(nameof(GA_AnimateClear), _GA_FINISH_INTERVAL);
+                SendCustomEventDelayedSeconds(nameof(_GA_FinishAnimation), _GA_FINISH_DELAY);
             }
         }
 
 
-        public void _GA_AnimateClearStep(out bool isFinished)
+        public bool _GA_AnimateClearStep()
         {
-            isFinished = false;
-
             // この処理をwidthの分繰り返す
             for (int i = 0; i < _GA_completeHeights.Length; i++)
             {
@@ -82,15 +77,16 @@ namespace ChuChuGimmicks.UDONTET
                 if (y == -1) { continue; }
 
                 byte idx = GetIndex(_GA_clearCount, y);
-                GR_UpdateBlock(idx, MinoType.None);
+                GR_HideBlock(idx);
             }
 
             _GA_clearCount++;
 
             if (_GA_clearCount == WIDTH)
             {
-                isFinished = true;
+                return true;
             }
+            return false;
         }
 
 
@@ -103,9 +99,23 @@ namespace ChuChuGimmicks.UDONTET
                 for (int x = 0; x < WIDTH; x++)
                 {
                     byte idx = GetIndex(x, y);
-                    GR_UpdateBlock(idx, G_grid[idx]);
+                    if (G_grid[idx] == MinoType.None)
+                    {
+                        GR_HideBlock(idx);
+                    }
+                    else
+                    {
+                        GR_ShowBlock(idx, G_grid[idx]);
+                    }
                 }
             }
+        }
+
+
+        public void _GA_FinishAnimation()
+        {
+            GA_Reset();
+            CurrentClearAnimState = ClearAnimationState.Completed;
         }
     }
 }

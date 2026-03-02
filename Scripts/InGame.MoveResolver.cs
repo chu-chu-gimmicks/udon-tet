@@ -44,20 +44,19 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void MR_ResolveMove(Vector2Int[] minoPos, out bool hasAppliedMove)
+        private bool MR_ResolveMove(Vector2Int[] minoPos)
         {
-            hasAppliedMove = false;
-
-            if (!_MR_NeedsMove(out _MoveDir dir)) { return; }
-            if (!GS_CanReflectInput()) { return; }
+            if (!_MR_NeedsMove(out _MoveDir dir)) { return false; }
+            if (!GS_CanReflectInput()) { return false; }
 
             CopyMino(minoPos, _MR_minoBuffer);
             bool success = _MR_TryMove(_MR_minoBuffer, dir);
             if (success)
             {
-                hasAppliedMove = true;
                 CopyMino(_MR_minoBuffer, minoPos);
+                return true;
             }
+            return false;
         }
 
 
