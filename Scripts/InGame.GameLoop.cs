@@ -6,18 +6,6 @@ using VRC.Udon;
 
 namespace ChuChuGimmicks.UDONTET
 {
-    public enum PlayerAction : int
-    {
-        None        = 0,
-        Move        = 1,
-        Spin        = 2,
-        SoftDrop    = 4,
-        HardDrop    = 8,
-        FirstHold   = 16,
-        Hold        = 32,
-        ChairAdjust = 64
-    }
-
     public partial class InGame
     {
         public bool ReflectOnlyInCollider { get; set; } = true;
@@ -101,7 +89,7 @@ namespace ChuChuGimmicks.UDONTET
             DR_Reset();
             ST_Reset();
 
-            _GL_Spawn();
+            _GL_SpawnMino();
             UI_Start();
 
             updateHandler.enabled = true;
@@ -132,11 +120,11 @@ namespace ChuChuGimmicks.UDONTET
 
             CopyMino(currentMinoPos, _GL_minoBuffer);
 
-            int actions = _GL_ResolveInput();
+            int actions = AM_ResolvedActions();
 
             if ((actions & (int)PlayerAction.FirstHold) != 0)
             {
-                _GL_Spawn();
+                _GL_SpawnMino();
             }
             else if ((actions & (int)PlayerAction.Hold) != 0)
             {
@@ -154,59 +142,6 @@ namespace ChuChuGimmicks.UDONTET
                     _GL_LockDown();
                 }
             }
-        }
-
-
-        private int _GL_ResolveInput()
-        {
-            int actions = 0;
-
-            if (MR_ResolveMove(currentMinoPos))      { actions |= (int)PlayerAction.Move; }
-            if (SR_ResolveSpin(currentMinoPos))      { actions |= (int)PlayerAction.Spin; }
-            if (SDR_ResolveSoftDrop())               { actions |= (int)PlayerAction.SoftDrop; }
-            if (HDR_ResolveHardDrop(currentMinoPos)) { actions |= (int)PlayerAction.HardDrop; }
-
-            if (HR_ResolveHold(currentMinoPos, out bool isFirstHold))
-            {
-                if (isFirstHold)
-                {
-                    actions |= (int)PlayerAction.FirstHold;
-                }
-                else
-                {
-                    actions |= (int)PlayerAction.Hold;
-                }
-            }
-
-            if (CAR_ResolveChairAdjust()) { actions |= (int)PlayerAction.ChairAdjust; }
-
-            // 優先順位が大事
-            if ((actions & (int)PlayerAction.Hold) != 0 || (actions & (int)PlayerAction.FirstHold) != 0)
-            {
-                GR_HideMino(_GL_minoBuffer);
-                PR_ShowHoldMino(HR_HoldMinoType);
-                return actions;
-            }
-
-            if ((actions & (int)PlayerAction.HardDrop) == 0)
-            {
-                if ((actions & (int)PlayerAction.Move) != 0)
-                {
-                    DR_TSpin = TSpinState.None;
-                    LC_UpdateByInput(currentMinoPos);
-                }
-
-                if ((actions & (int)PlayerAction.Spin) != 0)
-                {
-                    LC_UpdateByInput(currentMinoPos);
-                }
-            }
-
-            GR_HideMino(_GL_minoBuffer);
-            GR_ShowMino(currentMinoPos, CurrentMinoType);
-            CopyMino(currentMinoPos, _GL_minoBuffer);
-
-            return actions;
         }
 
 
@@ -229,6 +164,8 @@ namespace ChuChuGimmicks.UDONTET
 
         private void _GL_LockDown()
         {
+            SC_AddScoreDelta();
+
             GM_SaveMino(currentMinoPos, CurrentMinoType);
             int completeLines = GM_CompleteLines(currentMinoPos);
             if (completeLines > 0)
@@ -242,6 +179,8 @@ namespace ChuChuGimmicks.UDONTET
                     D_UpdateDropSpeed();
                 }
 
+                SC_CalculateScoreDelta();
+
                 GA_AnimateClear();
             }
             else
@@ -252,13 +191,9 @@ namespace ChuChuGimmicks.UDONTET
                     return;
                 }
 
-                _GL_Spawn();
+                _GL_SpawnMino();
                 UI_Update();
             }
-
-            CanHold = true;
-            DR_TSpin = TSpinState.None;
-            LC_Reset();
         }
 
 
@@ -279,25 +214,25 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void _GL_Spawn()
+        private void _GL_SpawnMino()
         {
             CurrentMinoType = S_SpawnMino(currentMinoPos);
-            GR_ShowMino(currentMinoPos, CurrentMinoType);
-            Angle = 0;
-
-            CanHold = true;
-            DR_TSpin = TSpinState.None;
-            LC_Reset();
+            _GL_InitializeWhenSpawn();
         }
 
 
         private  void _GL_SpawnBySubsequentHold()
         {
             S_SetMino(currentMinoPos, CurrentMinoType);
+            _GL_InitializeWhenSpawn(false);
+        }
+
+
+        private void _GL_InitializeWhenSpawn(bool canHold = true)
+        {
             GR_ShowMino(currentMinoPos, CurrentMinoType);
             Angle = 0;
-
-            CanHold = true;
+            CanHold = canHold;
             DR_TSpin = TSpinState.None;
             LC_Reset();
         }
@@ -305,16 +240,16 @@ namespace ChuChuGimmicks.UDONTET
 
         private void _GL_SpawnAfterAnimation()
         {
+            CurrentClearAnimState = ClearAnimationState.Idle;
+
             if (G_IsGameOver(currentMinoPos))
             {
                 GL_OnGameOver();
+                return;
             }
-            else
-            {
-                _GL_Spawn();
-                UI_Update();
-                CurrentClearAnimState = ClearAnimationState.Idle;
-            }
+
+            _GL_SpawnMino();
+            UI_Update();
         }
 
 

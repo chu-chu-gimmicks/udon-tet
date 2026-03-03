@@ -1,4 +1,4 @@
-﻿
+
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -32,12 +32,12 @@ namespace ChuChuGimmicks.UDONTET
         //}
 
 
-        public override void OnStationExited(VRCPlayerApi player)
+        public override void OnPlayerRespawn(VRCPlayerApi player)
         {
             if (player != Networking.LocalPlayer) { return; }
             if (!inGameManager.CM_IsSitting) { return; }
 
-            inGameManager.CM_OnRespawnedInPlay();
+            inGameManager.CM_IsSitting = false;
         }
     }
 }

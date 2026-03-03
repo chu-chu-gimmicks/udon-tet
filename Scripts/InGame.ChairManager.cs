@@ -8,7 +8,7 @@ namespace ChuChuGimmicks.UDONTET
 {
     public partial class InGame
     {
-        public bool CM_IsSitting { get; private set; } = false;
+        public bool CM_IsSitting { get; set; } = false;
 
 
 
@@ -39,12 +39,6 @@ namespace ChuChuGimmicks.UDONTET
         private void CM_OnGameOver()
         {
             CM_ExitChair(disableChair: true);
-        }
-
-
-        public void CM_OnRespawnedInPlay()
-        {
-            CM_IsSitting = false;
         }
     }
 }

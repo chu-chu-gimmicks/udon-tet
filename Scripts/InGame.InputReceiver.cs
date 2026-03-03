@@ -26,13 +26,14 @@ namespace ChuChuGimmicks.UDONTET
 
         private AxisState LHInputState { get; set; } = AxisState.Neutral;
         private AxisState LVInputState { get; set; } = AxisState.Neutral;
-        // private AxisState RHInputState { get; set; } = AxisState.Neutral;
+        private AxisState RHInputState { get; set; } = AxisState.Neutral;
         private AxisState RVInputState { get; set; } = AxisState.Neutral;
 
-        private AxisState UseInputState  { get; set; } = AxisState.Neutral;
-        private AxisState GrabInputState { get; set; } = AxisState.Neutral;
-
-        private ButtonState JumpInputState { get; set; } = ButtonState.Released;
+        //private ButtonState LUseInputState { get; set; }  = ButtonState.Released;
+        //private ButtonState RUseInputState { get; set; }  = ButtonState.Released;
+        private ButtonState LGrabInputState { get; set; } = ButtonState.Released;
+        private ButtonState RGrabInputState { get; set; } = ButtonState.Released;
+        private ButtonState JumpInputState { get; set; }  = ButtonState.Released;
 
 
 
@@ -41,13 +42,14 @@ namespace ChuChuGimmicks.UDONTET
         {
             LHInputState = AxisState.Neutral;
             LVInputState = AxisState.Neutral;
-            // RHInputState = AxisState.Neutral;
+            RHInputState = AxisState.Neutral;
             RVInputState = AxisState.Neutral;
 
-            UseInputState  = AxisState.Neutral;
-            GrabInputState = AxisState.Neutral;
-
-            JumpInputState = ButtonState.Released;
+            //LUseInputState  = ButtonState.Released;
+            //RUseInputState  = ButtonState.Released;
+            LGrabInputState = ButtonState.Released;
+            RGrabInputState = ButtonState.Released;
+            JumpInputState  = ButtonState.Released;
 
             CM_IsSitting = false;
             chair.SetActive(false);
@@ -67,12 +69,13 @@ namespace ChuChuGimmicks.UDONTET
 
             LHInputState = AxisState.Neutral;
             LVInputState = AxisState.Neutral;
-            // RHInputState = AxisState.Neutral;
+            RHInputState = AxisState.Neutral;
             RVInputState = AxisState.Neutral;
 
-            UseInputState  = AxisState.Neutral;
-            GrabInputState = AxisState.Neutral;
-
+            //LUseInputState = ButtonState.Released;
+            //RUseInputState = ButtonState.Released;
+            LGrabInputState = ButtonState.Released;
+            RGrabInputState = ButtonState.Released;
             JumpInputState = ButtonState.Released;
 
             // 左コントローラーの水平入力に対応
@@ -95,6 +98,16 @@ namespace ChuChuGimmicks.UDONTET
                 LVInputState = AxisState.Negative;
             }
 
+            // 右コントローラーの水平入力に対応
+            if (Input.GetKey(KeyCode.Q))
+            {
+                RHInputState = AxisState.Negative;
+            }
+            else if (Input.GetKey(KeyCode.E))
+            {
+                RHInputState = AxisState.Positive;
+            }
+
             // 右コントローラーの垂直入力に対応
             float wheelAxis = Input.GetAxis("Mouse ScrollWheel");
             if (Mathf.Abs(wheelAxis) >= Mathf.Epsilon)
@@ -104,20 +117,11 @@ namespace ChuChuGimmicks.UDONTET
                     : AxisState.Positive;
             }
 
-            // Use 入力に対応
-            if (Input.GetKey(KeyCode.Q))
-            {
-                UseInputState = AxisState.Negative;
-            }
-            else if (Input.GetKey(KeyCode.E))
-            {
-                UseInputState = AxisState.Positive;
-            }
-
             // Grab 入力に対応
             if (Input.GetKey(KeyCode.Space))
             {
-                GrabInputState = AxisState.Positive;
+                LGrabInputState = ButtonState.Pressed;
+                RGrabInputState = ButtonState.Pressed;
             }
 
             // Jump 入力に対応
@@ -153,12 +157,12 @@ namespace ChuChuGimmicks.UDONTET
 
 
         // 右スティックの水平方向の入力
-        // public override void InputLookHorizontal(float value, VRC.Udon.Common.UdonInputEventArgs args)
-        // {
-        //     if (!_IR_CanReceiveInput(isInVR: true)) { return; }
+        public override void InputLookHorizontal(float value, VRC.Udon.Common.UdonInputEventArgs args)
+        {
+            if (!_IR_CanReceiveInput(isInVR: true)) { return; }
 
-        //     RHInputState = _IR_GetAxisState(value);
-        // }
+            RHInputState = _IR_GetAxisState(value);
+        }
 
 
         // 右スティックの垂直方向の入力
@@ -171,12 +175,20 @@ namespace ChuChuGimmicks.UDONTET
 
 
         // Use 入力
-        public override void InputUse(bool value, VRC.Udon.Common.UdonInputEventArgs args)
-        {
-            if (!_IR_CanReceiveInput(isInVR: true)) { return; }
+        //public override void InputUse(bool value, VRC.Udon.Common.UdonInputEventArgs args)
+        //{
+        //    if (!_IR_CanReceiveInput(isInVR: true)) { return; }
 
-            UseInputState = _IR_GetAxisState(value, args);
-        }
+        //    switch (args.handType)
+        //    {
+        //        case VRC.Udon.Common.HandType.LEFT:
+        //            LUseInputState = _IR_GetButtonState(value);
+        //            break;
+        //        case VRC.Udon.Common.HandType.RIGHT:
+        //            RUseInputState = _IR_GetButtonState(value);
+        //            break;
+        //    }
+        //}
 
 
         // Grab 入力
@@ -184,7 +196,15 @@ namespace ChuChuGimmicks.UDONTET
         {
             if (!_IR_CanReceiveInput(isInVR: true)) { return; }
 
-            GrabInputState = _IR_GetAxisState(value, args);
+            switch (args.handType)
+            {
+                case VRC.Udon.Common.HandType.LEFT:
+                    LGrabInputState = _IR_GetButtonState(value);
+                    break;
+                case VRC.Udon.Common.HandType.RIGHT:
+                    RGrabInputState = _IR_GetButtonState(value);
+                    break;
+            }
         }
 
 
@@ -193,7 +213,7 @@ namespace ChuChuGimmicks.UDONTET
         {
             if (!_IR_CanReceiveInput(isInVR: true)) { return; }
 
-            JumpInputState = GetButtonState(value);
+            JumpInputState = _IR_GetButtonState(value);
         }
 
 
@@ -205,17 +225,7 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private AxisState _IR_GetAxisState(bool value, VRC.Udon.Common.UdonInputEventArgs args)
-        {
-            if (!value) return AxisState.Neutral;
-
-            return args.handType == VRC.Udon.Common.HandType.LEFT
-                ? AxisState.Negative
-                : AxisState.Positive;
-        }
-
-
-        private ButtonState GetButtonState(bool value)
+        private ButtonState _IR_GetButtonState(bool value)
         {
             return value ? ButtonState.Pressed : ButtonState.Released;
         }

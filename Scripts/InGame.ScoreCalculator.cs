@@ -15,11 +15,9 @@ namespace ChuChuGimmicks.UDONTET
 
         private void SC_CalculateScoreDelta()
         {
-            if (DR_line == 0)
-            {
-                DR_ScoreDelta = 0;
-                return;
-            }
+            DR_ScoreDelta = 0;
+
+            if (DR_line == 0) { return; }
 
             int score = 0;
 
@@ -69,6 +67,7 @@ namespace ChuChuGimmicks.UDONTET
         private void SC_AddScoreDelta()
         {
             ST_Score += DR_ScoreDelta;
+            DR_ScoreDelta = 0;
         }
     }
 }

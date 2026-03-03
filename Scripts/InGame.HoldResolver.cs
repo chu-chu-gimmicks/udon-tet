@@ -10,7 +10,8 @@ namespace ChuChuGimmicks.UDONTET
     {
         private MinoType HR_HoldMinoType { get; set; } = MinoType.None;
 
-        private AxisState _HR_lastInput = AxisState.Neutral;
+        private ButtonState _HR_lastInputL = ButtonState.Released;
+        private ButtonState _HR_lastInputR = ButtonState.Released;
 
         private Vector2Int[] _HR_minoBuffer = new Vector2Int[4];
 
@@ -20,7 +21,8 @@ namespace ChuChuGimmicks.UDONTET
         private void HR_Reset()
         {
             HR_HoldMinoType = MinoType.None;
-            _HR_lastInput = AxisState.Neutral;
+            _HR_lastInputL = ButtonState.Released;
+            _HR_lastInputR = ButtonState.Released;
         }
 
 
@@ -51,9 +53,11 @@ namespace ChuChuGimmicks.UDONTET
 
         private bool _HR_NeedsHold()
         {
-            AxisState inputState = GrabInputState;
-            bool isJustPressed = (inputState != AxisState.Neutral && _HR_lastInput == AxisState.Neutral);
-            _HR_lastInput = inputState;
+            ButtonState inputStateL = LGrabInputState;
+            ButtonState inputStateR = RGrabInputState;
+            bool isJustPressed = (inputStateL != ButtonState.Released && _HR_lastInputL == ButtonState.Released) || (inputStateR != ButtonState.Released && _HR_lastInputR == ButtonState.Released);
+            _HR_lastInputL = inputStateL;
+            _HR_lastInputR = inputStateR;
             return isJustPressed;
         }
     }
