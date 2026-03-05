@@ -32,7 +32,7 @@ namespace ChuChuGimmicks.UDONTET
 
             if (CurrentGameState == GameState.Title)
             {
-                GL_Reset();
+                GLP_Reset();
 
                 _SYR_isAlreadySynced = false;
             }
@@ -43,10 +43,10 @@ namespace ChuChuGimmicks.UDONTET
                     if (ReflectOnlyInCollider && !IsInCollider) { return; }
 
                     _SYR_SynchronizeGrid();
-                    GR_ShowMino(currentMinoPos, CurrentMinoType);
-                    PR_ShowHoldMino(HR_HoldMinoType);
-                    PR_ShowQueue(S_minoQueue);
-                    UI_Update();
+                    GRR_ShowMino(currentMinoPos, CurrentMinoType);
+                    PVR_ShowHoldMino(HLR_HoldMinoType);
+                    PVR_ShowQueue(SPN_minoQueue);
+                    UIM_Update();
                 }
                 else
                 {
@@ -59,7 +59,7 @@ namespace ChuChuGimmicks.UDONTET
             else if (CurrentGameState == GameState.GameOver)
             {
                 _SYR_StartSyncDataReflection();
-                UI_OnGameOver();
+                UIM_OnGameOver();
 
                 rangeCollider.enabled = false;
                 _SYR_isAlreadySynced = false;
@@ -69,35 +69,35 @@ namespace ChuChuGimmicks.UDONTET
 
         private void _SYR_DecompressData()
         {
-            _SYR_DecompressMinos(Sync_compressedMinos, currentMinoPos, out GameState _gameState, out MinoType _minoType, out MinoType _holdMinoType);
+            _SYR_DecompressMinos(SYD_compressedMinos, currentMinoPos, out GameState _gameState, out MinoType _minoType, out MinoType _holdMinoType);
             CurrentGameState = _gameState;
             CurrentMinoType = _minoType;
-            HR_HoldMinoType = _holdMinoType;
+            HLR_HoldMinoType = _holdMinoType;
 
-            _SYR_DecompressGrid(Sync_compressedGrid, G_grid);
-            _SYR_DecompressMinoQueue(Sync_compressedMinoQueue, S_minoQueue);
+            _SYR_DecompressGrid(SYD_compressedGrid, grid);
+            _SYR_DecompressMinoQueue(SYD_compressedMinoQueue, SPN_minoQueue);
         }
 
 
         private void _SYR_CopyFromSyncData()
         {
-            PlayId = Sync_playId;
+            PlayId = SYD_playId;
 
-            ST_Level      = Sync_level;
-            ST_Score      = Sync_score;
-            DR_ScoreDelta = Sync_scoreDelta;
+            STT_Level      = SYD_level;
+            STT_Score      = SYD_score;
+            DRS_ScoreDelta = SYD_scoreDelta;
 
-            DR_Line  = Sync_line;
-            DR_Combo = Sync_combo;
-            DR_TSpin = (TSpinState)Sync_tSpin;
-            DR_BTB   = Sync_bTB;
-            DR_Block = Sync_block;
+            DRS_Line  = SYD_line;
+            DRS_Combo = SYD_combo;
+            DRS_TSpin = (TSpinState)SYD_tSpin;
+            DRS_BTB   = SYD_bTB;
+            DRS_Block = SYD_block;
 
-            ST_Line    = Sync_lineStat;
-            ST_Combo   = Sync_comboStat;
-            ST_TSpin   = Sync_tSpinStat;
-            ST_BTB     = Sync_bTBStat;
-            ST_Perfect = Sync_perfectStat;
+            STT_Line    = SYD_lineStat;
+            STT_Combo   = SYD_comboStat;
+            STT_TSpin   = SYD_tSpinStat;
+            STT_BTB     = SYD_bTBStat;
+            STT_Perfect = SYD_perfectStat;
         }
 
 
@@ -108,26 +108,26 @@ namespace ChuChuGimmicks.UDONTET
             _SYR_SynchronizeGrid();
             if (CurrentGameState == GameState.Playing)
             {
-                GR_ShowMino(currentMinoPos, CurrentMinoType);
+                GRR_ShowMino(currentMinoPos, CurrentMinoType);
             }
-            PR_ShowHoldMino(HR_HoldMinoType);
-            PR_ShowQueue(S_minoQueue);
+            PVR_ShowHoldMino(HLR_HoldMinoType);
+            PVR_ShowQueue(SPN_minoQueue);
 
-            if (ST_Line == 0)
+            if (STT_Line == 0)
             {
                 // ゲーム開始直後の UI に Perfect と表示されてしまうため、それを防ぐ
-                DR_Block = 1;
+                DRS_Block = 1;
             }
-            UI_Start();
-            UI_Update();
+            UIM_Start();
+            UIM_Update();
         }
 
 
         private void _SYR_SynchronizeGrid()
         {
-            for (byte i = 0; i < G_grid.Length; i++)
+            for (byte i = 0; i < grid.Length; i++)
             {
-                GR_ShowBlock(i, G_grid[i]);
+                GRR_ShowBlock(i, grid[i]);
             }
         }
 

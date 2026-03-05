@@ -22,7 +22,7 @@ namespace ChuChuGimmicks.UDONTET
 
     public partial class InGame
     {
-        private const float _IR_STICK_THRESHOLD = 0.75f;
+        private const float _INR_STICK_THRESHOLD = 0.75f;
 
         private AxisState LHInputState { get; set; } = AxisState.Neutral;
         private AxisState LVInputState { get; set; } = AxisState.Neutral;
@@ -38,7 +38,7 @@ namespace ChuChuGimmicks.UDONTET
 
 
 
-        private void IR_Reset()
+        private void INR_Reset()
         {
             LHInputState = AxisState.Neutral;
             LVInputState = AxisState.Neutral;
@@ -50,21 +50,18 @@ namespace ChuChuGimmicks.UDONTET
             LGrabInputState = ButtonState.Released;
             RGrabInputState = ButtonState.Released;
             JumpInputState  = ButtonState.Released;
-
-            CM_IsSitting = false;
-            chair.SetActive(false);
         }
 
 
-        private void IR_Update()
+        private void INR_Update()
         {
-            _IR_ReceiveInputByDesktop();
+            _INR_ReceiveInputByDesktop();
         }
 
 
-        private void _IR_ReceiveInputByDesktop()
+        private void _INR_ReceiveInputByDesktop()
         {
-            if (!_IR_CanReceiveInput(isInVR: false)) { return; }
+            if (!_INR_CanReceiveInput(isInVR: false)) { return; }
 
 
             LHInputState = AxisState.Neutral;
@@ -125,7 +122,7 @@ namespace ChuChuGimmicks.UDONTET
             }
 
             // Jump 入力に対応
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
                 JumpInputState = ButtonState.Pressed;
             }
@@ -133,7 +130,7 @@ namespace ChuChuGimmicks.UDONTET
             // デバッグ用
             if (Input.GetKeyDown(KeyCode.P))
             {
-                GL_DebugLevel();
+                GLP_DebugLevel();
             }
         }
 
@@ -141,51 +138,51 @@ namespace ChuChuGimmicks.UDONTET
         // 左スティックの水平方向の入力
         public override void InputMoveHorizontal(float value, VRC.Udon.Common.UdonInputEventArgs args)
         {
-            if (!_IR_CanReceiveInput(isInVR: true)) { return; }
+            if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
-            LHInputState = _IR_GetAxisState(value);
+            LHInputState = _INR_GetAxisState(value);
         }
 
 
         // 左スティックの垂直方向の入力
         public override void InputMoveVertical(float value, VRC.Udon.Common.UdonInputEventArgs args)
         {
-            if (!_IR_CanReceiveInput(isInVR: true)) { return; }
+            if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
-            LVInputState = _IR_GetAxisState(value);
+            LVInputState = _INR_GetAxisState(value);
         }
 
 
         // 右スティックの水平方向の入力
         public override void InputLookHorizontal(float value, VRC.Udon.Common.UdonInputEventArgs args)
         {
-            if (!_IR_CanReceiveInput(isInVR: true)) { return; }
+            if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
-            RHInputState = _IR_GetAxisState(value);
+            RHInputState = _INR_GetAxisState(value);
         }
 
 
         // 右スティックの垂直方向の入力
         public override void InputLookVertical(float value, VRC.Udon.Common.UdonInputEventArgs args)
         {
-            if (!_IR_CanReceiveInput(isInVR: true)) { return; }
+            if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
-            RVInputState = _IR_GetAxisState(value);
+            RVInputState = _INR_GetAxisState(value);
         }
 
 
         // Use 入力
         //public override void InputUse(bool value, VRC.Udon.Common.UdonInputEventArgs args)
         //{
-        //    if (!_IR_CanReceiveInput(isInVR: true)) { return; }
+        //    if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
         //    switch (args.handType)
         //    {
         //        case VRC.Udon.Common.HandType.LEFT:
-        //            LUseInputState = _IR_GetButtonState(value);
+        //            LUseInputState = _INR_GetButtonState(value);
         //            break;
         //        case VRC.Udon.Common.HandType.RIGHT:
-        //            RUseInputState = _IR_GetButtonState(value);
+        //            RUseInputState = _INR_GetButtonState(value);
         //            break;
         //    }
         //}
@@ -194,15 +191,15 @@ namespace ChuChuGimmicks.UDONTET
         // Grab 入力
         public override void InputGrab(bool value, VRC.Udon.Common.UdonInputEventArgs args)
         {
-            if (!_IR_CanReceiveInput(isInVR: true)) { return; }
+            if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
             switch (args.handType)
             {
                 case VRC.Udon.Common.HandType.LEFT:
-                    LGrabInputState = _IR_GetButtonState(value);
+                    LGrabInputState = _INR_GetButtonState(value);
                     break;
                 case VRC.Udon.Common.HandType.RIGHT:
-                    RGrabInputState = _IR_GetButtonState(value);
+                    RGrabInputState = _INR_GetButtonState(value);
                     break;
             }
         }
@@ -211,30 +208,30 @@ namespace ChuChuGimmicks.UDONTET
         // Jump 入力
         public override void InputJump(bool value, VRC.Udon.Common.UdonInputEventArgs args)
         {
-            if (!_IR_CanReceiveInput(isInVR: true)) { return; }
+            if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
-            JumpInputState = _IR_GetButtonState(value);
+            JumpInputState = _INR_GetButtonState(value);
         }
 
 
-        private AxisState _IR_GetAxisState(float value)
+        private AxisState _INR_GetAxisState(float value)
         {
-            if (value <= -_IR_STICK_THRESHOLD) return AxisState.Negative;
-            if (value >= _IR_STICK_THRESHOLD)  return AxisState.Positive;
+            if (value <= -_INR_STICK_THRESHOLD) return AxisState.Negative;
+            if (value >= _INR_STICK_THRESHOLD)  return AxisState.Positive;
             return AxisState.Neutral;
         }
 
 
-        private ButtonState _IR_GetButtonState(bool value)
+        private ButtonState _INR_GetButtonState(bool value)
         {
             return value ? ButtonState.Pressed : ButtonState.Released;
         }
 
 
-        private bool _IR_CanReceiveInput(bool isInVR)
+        private bool _INR_CanReceiveInput(bool isInVR)
         {
             return
-                CM_IsSitting
+                STM_IsSitting
                 && Networking.LocalPlayer.IsUserInVR() == isInVR
                 && (!Utilities.IsValid(VRC.SDK3.Rendering.VRCCameraSettings.PhotoCamera) || !VRC.SDK3.Rendering.VRCCameraSettings.PhotoCamera.Active);
         }

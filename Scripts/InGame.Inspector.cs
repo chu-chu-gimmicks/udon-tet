@@ -12,6 +12,7 @@ namespace ChuChuGimmicks.UDONTET
         [SerializeField] private GameContext gameContext;
         [SerializeField] private UpdateHandler updateHandler;
         [SerializeField] private RangeCollider rangeCollider;
+        [SerializeField] private UserDataAccessor userDataAccessor;
         [Space(16)]
 
 
@@ -51,9 +52,9 @@ namespace ChuChuGimmicks.UDONTET
 
 
 
-        [SerializeField] private GameObject chair;
         [SerializeField] private VRCStation station;
-        [SerializeField] private Transform chairUpperLimit;
-        [SerializeField] private Transform chairLowerLimit;
+        [SerializeField] private Transform viewHeight;
+        [SerializeField] private Transform stationUpperLimit;
+        [SerializeField] private Transform stationLowerLimit;
     }
 }

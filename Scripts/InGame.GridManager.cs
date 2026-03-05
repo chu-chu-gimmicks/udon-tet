@@ -8,44 +8,34 @@ namespace ChuChuGimmicks.UDONTET
 {
     public partial class InGame
     {
-        private int[] _GM_completeHeights = new int[4];
+        private int[] _GRM_completeHeights = new int[4];
 
 
 
 
-        private void GM_Reset()
+        private void GRM_Reset()
         {
-            for (int i = 0; i < _GM_completeHeights.Length; i++)
+            for (int i = 0; i < _GRM_completeHeights.Length; i++)
             {
-                _GM_completeHeights[i] = -1;
+                _GRM_completeHeights[i] = -1;
             }
         }
 
 
-        private bool _GM_IsOccupied(Vector2Int pos)
-        {
-            if (G_IsOutOfXBounds(pos) || G_IsBelowYBounds(pos) || G_IsOverlapped(pos))
-            {
-                return true;
-            }
-            return false;
-        }
-
-
-        private void GM_SaveMino(Vector2Int[] minoPos, MinoType minoType)
+        private void GRM_SaveMino(Vector2Int[] minoPos, MinoType minoType)
         {
             for (int i = 0; i < minoPos.Length; i++)
             {
                 int idx = GetIndex(minoPos[i].x, minoPos[i].y);
-                G_grid[idx] = minoType;
+                grid[idx] = minoType;
             }
 
-            DR_Block += (byte)minoPos.Length;
+            DRS_Block += (byte)minoPos.Length;
         }
 
 
         // 行がそろっているか判定
-        private byte GM_CompleteLines(Vector2Int[] minoPos)
+        private byte GRM_CompleteLines(Vector2Int[] minoPos)
         {
             int minHeight = int.MaxValue;
             int maxHeight = int.MinValue;
@@ -67,7 +57,7 @@ namespace ChuChuGimmicks.UDONTET
                 for (int x = 0; x < WIDTH; x++)
                 {
                     int idx = GetIndex(x, y);
-                    if (G_grid[idx] == MinoType.None)
+                    if (grid[idx] == MinoType.None)
                     {
                         isLineComplete = false;
                         break;
@@ -76,71 +66,71 @@ namespace ChuChuGimmicks.UDONTET
 
                 if (isLineComplete)
                 {
-                    _GM_completeHeights[count] = y;
+                    _GRM_completeHeights[count] = y;
                     count++;
-                    Debug.Log($"COMPLETED : {_GM_completeHeights[count - 1]}");
+                    Debug.Log($"COMPLETED : {_GRM_completeHeights[count - 1]}");
                 }
             }
 
             // アニメーション用のクラスに配列を渡しておく
-            GA_CopyCompleteHeights(_GM_completeHeights);
+            GRA_CopyCompleteHeights(_GRM_completeHeights);
 
             // TSpin/Perfect 以外はここで算出
             if (count > 0)
             {
-                DR_Line = count;
-                DR_Combo++;
+                DRS_Line = count;
+                DRS_Combo++;
 
-                if (count == 4 || DR_TSpin != TSpinState.None)
+                if (count == 4 || DRS_TSpin != TSpinState.None)
                 {
-                    DR_BTB++;
+                    DRS_BTB++;
                 }
                 else
                 {
-                    DR_BTB = 0;
+                    DRS_BTB = 0;
                 }
             }
             else
             {
-                DR_Line = 0;
-                DR_Combo = 0;
-                DR_TSpin = TSpinState.None;
+                DRS_Line = 0;
+                DRS_Combo = 0;
+                DRS_TSpin = TSpinState.None;
             }
 
             return count;
         }
 
 
-        private void GM_ClearLines()
+        private void GRM_ClearLines()
         {
-            for (int i = 0; i < _GM_completeHeights.Length; i++)
+            for (int i = 0; i < _GRM_completeHeights.Length; i++)
             {
-                int y = _GM_completeHeights[i];
+                int y = _GRM_completeHeights[i];
                 if (y == -1) { continue; }
 
                 for (int x = 0; x < WIDTH; x++)
                 {
                     byte idx = GetIndex(x, y);
-                    G_grid[idx] = MinoType.None;
+                    grid[idx] = MinoType.None;
 
-                    DR_Block--;
+                    DRS_Block--;
                 }
             }
         }
 
 
-        private void GM_ShiftLinesDown()
+        private void GRM_ShiftLinesDown()
         {
-            int minHeight = _GM_completeHeights[0];
+            int minHeight = _GRM_completeHeights[0];
             int yDest = minHeight;
 
             for (int ySrc = minHeight; ySrc < HEIGHT; ySrc++)
             {
                 // ySrc が消える行かどうかチェック
                 bool isComplete = false;
-                for (int i = 0; i < _GM_completeHeights.Length; i++)
+                for (int i = 0; i < _GRM_completeHeights.Length; i++)
                 {
-                    if (ySrc == _GM_completeHeights[i])
+                    if (ySrc == _GRM_completeHeights[i])
                     {
                         isComplete = true;
                         break;
@@ -155,7 +145,7 @@ namespace ChuChuGimmicks.UDONTET
                 {
                     byte idxSrc = GetIndex(x, ySrc);
                     byte idxDest = GetIndex(x, yDest);
-                    G_grid[idxDest] = G_grid[idxSrc];
+                    grid[idxDest] = grid[idxSrc];
                 }
 
                 yDest++;
@@ -167,14 +157,14 @@ namespace ChuChuGimmicks.UDONTET
                 for (int x = 0; x < WIDTH; x++)
                 {
                     byte idxDest = GetIndex(x, y);
-                    G_grid[idxDest] = MinoType.None;
+                    grid[idxDest] = MinoType.None;
                 }
             }
 
             // 配列をリセット
-            for (int i = 0; i < _GM_completeHeights.Length; i++)
+            for (int i = 0; i < _GRM_completeHeights.Length; i++)
             {
-                _GM_completeHeights[i] = -1;
+                _GRM_completeHeights[i] = -1;
             }
         }
     }

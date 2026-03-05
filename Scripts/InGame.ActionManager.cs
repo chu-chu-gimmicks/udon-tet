@@ -15,22 +15,28 @@ namespace ChuChuGimmicks.UDONTET
         HardDrop    = 8,
         FirstHold   = 16,
         Hold        = 32,
-        ChairAdjust = 64
+        ChairAdjust = 64,
+        Pause       = 128
     }
 
 
     public partial class InGame
     {
-        private int AM_ResolvedActions()
+        private void ACM_Reset()
+        {
+        }
+
+
+        private int ACM_ResolvedActions()
         {
             int actions = (int)PlayerAction.None;
 
-            if (MR_ResolveMove(currentMinoPos)) { actions |= (int)PlayerAction.Move; }
-            if (SR_ResolveSpin(currentMinoPos)) { actions |= (int)PlayerAction.Spin; }
+            if (MVR_ResolveMove(currentMinoPos)) { actions |= (int)PlayerAction.Move; }
+            if (SPR_ResolveSpin(currentMinoPos)) { actions |= (int)PlayerAction.Spin; }
             if (SDR_ResolveSoftDrop()) { actions |= (int)PlayerAction.SoftDrop; }
             if (HDR_ResolveHardDrop(currentMinoPos)) { actions |= (int)PlayerAction.HardDrop; }
 
-            if (HR_ResolveHold(currentMinoPos, out bool isFirstHold))
+            if (HLR_ResolveHold(currentMinoPos, out bool isFirstHold))
             {
                 if (isFirstHold)
                 {
@@ -42,13 +48,14 @@ namespace ChuChuGimmicks.UDONTET
                 }
             }
 
-            if (CAR_ResolveChairAdjust()) { actions |= (int)PlayerAction.ChairAdjust; }
+            if (ADR_ResolveAdjustment())  { actions |= (int)PlayerAction.ChairAdjust; }
+            if (PAR_ResolvePause())       { actions |= (int)PlayerAction.Pause; }
 
             // 優先順位が大事
             if ((actions & (int)PlayerAction.Hold) != 0 || (actions & (int)PlayerAction.FirstHold) != 0)
             {
-                GR_HideMino(_GL_minoBuffer);
-                PR_ShowHoldMino(HR_HoldMinoType);
+                GRR_HideMino(_GLP_minoBuffer);
+                PVR_ShowHoldMino(HLR_HoldMinoType);
                 return actions;
             }
 
@@ -56,19 +63,19 @@ namespace ChuChuGimmicks.UDONTET
             {
                 if ((actions & (int)PlayerAction.Move) != 0)
                 {
-                    DR_TSpin = TSpinState.None;
-                    LC_UpdateByInput(currentMinoPos);
+                    DRS_TSpin = TSpinState.None;
+                    LDC_UpdateByInput(currentMinoPos);
                 }
 
                 if ((actions & (int)PlayerAction.Spin) != 0)
                 {
-                    LC_UpdateByInput(currentMinoPos);
+                    LDC_UpdateByInput(currentMinoPos);
                 }
             }
 
-            GR_HideMino(_GL_minoBuffer);
-            GR_ShowMino(currentMinoPos, CurrentMinoType);
-            CopyMino(currentMinoPos, _GL_minoBuffer);
+            GRR_HideMino(_GLP_minoBuffer);
+            GRR_ShowMino(currentMinoPos, CurrentMinoType);
+            CopyMino(currentMinoPos, _GLP_minoBuffer);
 
             return actions;
         }

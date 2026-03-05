@@ -1,4 +1,4 @@
-﻿
+
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -10,28 +10,14 @@ namespace ChuChuGimmicks.UDONTET
     public class UserData : UdonSharpBehaviour
     {
         [UdonSynced] private int yourHighScore = 0;
-        public int GetYourHighScore()
+        public int YourHighScore
         {
-            return yourHighScore;
-        }
-        public void SetYourHighScore(int score)
-        {
-            yourHighScore = score;
-            RequestSerialization();
-        }
-
-
-        private bool isRestored = false;
-        public bool GetIsRestored() { return isRestored; }
-
-
-
-
-        public override void OnPlayerRestored(VRCPlayerApi player)
-        {
-            if (player == Networking.LocalPlayer)
+            get { return yourHighScore; }
+            set
             {
-                isRestored = true;
+                if (value <= yourHighScore) { return; }
+                yourHighScore = value;
+                RequestSerialization();
             }
         }
     }

@@ -74,9 +74,9 @@ namespace ChuChuGimmicks.UDONTET
             else
             {
                 // 正常なら同期実行
-                Sync_compressedMinos = _SYS_CompressMinos(currentMinoPos, CurrentGameState, CurrentMinoType, HR_HoldMinoType);
-                Sync_compressedGrid = _SYS_CompressGrid(G_grid, Sync_compressedGrid);
-                Sync_compressedMinoQueue = _SYS_CompressMinoQueue(S_minoQueue);
+                SYD_compressedMinos = _SYS_CompressMinos(currentMinoPos, CurrentGameState, CurrentMinoType, HLR_HoldMinoType);
+                SYD_compressedGrid = _SYS_CompressGrid(grid, SYD_compressedGrid);
+                SYD_compressedMinoQueue = _SYS_CompressMinoQueue(SPN_minoQueue);
                 _SYS_CopyToSyncedData();
 
                 RequestSerialization();
@@ -114,23 +114,23 @@ namespace ChuChuGimmicks.UDONTET
 
         private void _SYS_CopyToSyncedData()
         {
-            Sync_playId = PlayId;
+            SYD_playId = PlayId;
 
-            Sync_level = ST_Level;
-            Sync_score = ST_Score;
-            Sync_scoreDelta = DR_ScoreDelta;
+            SYD_level = STT_Level;
+            SYD_score = STT_Score;
+            SYD_scoreDelta = DRS_ScoreDelta;
 
-            Sync_line  = DR_Line;
-            Sync_combo = DR_Combo;
-            Sync_tSpin = (byte)(int)DR_TSpin;
-            Sync_bTB   = DR_BTB;
-            Sync_block = DR_Block;
+            SYD_line  = DRS_Line;
+            SYD_combo = DRS_Combo;
+            SYD_tSpin = (byte)(int)DRS_TSpin;
+            SYD_bTB   = DRS_BTB;
+            SYD_block = DRS_Block;
 
-            Sync_lineStat    = ST_Line;
-            Sync_comboStat   = ST_Combo;
-            Sync_tSpinStat   = ST_TSpin;
-            Sync_bTBStat     = ST_BTB;
-            Sync_perfectStat = ST_Perfect;
+            SYD_lineStat    = STT_Line;
+            SYD_comboStat   = STT_Combo;
+            SYD_tSpinStat   = STT_TSpin;
+            SYD_bTBStat     = STT_BTB;
+            SYD_perfectStat = STT_Perfect;
         }
 
 
@@ -143,7 +143,7 @@ namespace ChuChuGimmicks.UDONTET
         // -------- 圧縮 --------
 
 
-        // 32 + 4 + 1 + 1byte �� 4byte �Ɉ��k
+        // 32 + 4 + 1 + 1 bytes を 4 bytes に圧縮
         private uint _SYS_CompressMinos(Vector2Int[] mino, GameState state, MinoType minoType, MinoType holdMinoType)
         {
             uint compressed = 0;
@@ -168,7 +168,7 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        // byte[250] �� ulong[10] �Ɉ��k
+        // byte[250] (250 bytes) を ulong[10] (80 bytes) に圧縮
         private ulong[] _SYS_CompressGrid(MinoType[] grid, ulong[] compressed)
         {
             if (grid.Length != 250 || compressed.Length != 10) { return compressed; }
@@ -177,7 +177,7 @@ namespace ChuChuGimmicks.UDONTET
             for (int i = 0; i < 200; i++)
             {
                 int index = i % 20;
-                // �r�b�g���]����̂́A�l������Ȃ��r�b�g�����ׂ�1�ɂ��邽��
+                // ビットを反転するのは、値が入らないビットを全て1にするため
                 ulong threeBits = (ulong)(~(int)grid[i] & 0b111) << (index * 3);
                 row |= threeBits;
 
@@ -188,7 +188,7 @@ namespace ChuChuGimmicks.UDONTET
                 }
             }
 
-            // 200�ڈȍ~�� grid �̈��k
+            // 200番目以降の grid の圧縮
             int count = 0;
             for (int i = 200; i < grid.Length; i++)
             {
@@ -200,7 +200,7 @@ namespace ChuChuGimmicks.UDONTET
                     compressed[0] |= threeBits << 60;
                 }
 
-                // �r�b�g���]����̂́A�l������Ȃ��r�b�g�����ׂ�1�ɂ��邽��
+                // ビットを反転するのは、値が入らないビットを全て1にするため
                 ulong fourBits1 = (ulong)(~i & 0b1111);
                 ulong fourBits2 = (ulong)((~i >> 4) & 0b1111);
                 compressed[count * 2 + 1] |= fourBits1 << 60;
@@ -210,7 +210,7 @@ namespace ChuChuGimmicks.UDONTET
                 if (count == 4) { break; }
             }
 
-            // �l������Ȃ��r�b�g�����ׂ�1�ɂ���
+            // 値が入らないビットを全て1にする
             for (int i = 0; i < compressed.Length; i++)
             {
                 compressed[i] = ~compressed[i];
@@ -220,7 +220,7 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        // 5byte �� 2byte �Ɉ��k
+        // 5bytes を 2bytes に圧縮
         private ushort _SYS_CompressMinoQueue(MinoType[] minoQueue)
         {
             if (minoQueue.Length != 5) { return 0; }

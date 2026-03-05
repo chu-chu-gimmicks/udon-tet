@@ -8,81 +8,81 @@ namespace ChuChuGimmicks.UDONTET
 {
     public partial class InGame
     {
-        private const float _GA_START_DELAY = 0.5f;
-        private const float _GA_CLEANING_INTERVAL = 0.05f;
-        private const float _GA_SHIFTDOWN_DELAY = 0.25f;
-        private const float _GA_FINISH_DELAY = 0.25f;
+        private const float _GRA_START_DELAY = 0.5f;
+        private const float _GRA_CLEANING_INTERVAL = 0.05f;
+        private const float _GRA_SHIFTDOWN_DELAY = 0.25f;
+        private const float _GRA_FINISH_DELAY = 0.25f;
 
-        private int _GA_clearCount = 0;
+        private int _GRA_clearCount = 0;
 
-        private int[] _GA_completeHeights = new int[4];
-
-
+        private int[] _GRA_completeHeights = new int[4];
 
 
-        private void GA_Reset()
+
+
+        private void GRA_Reset()
         {
-            _GA_clearCount = 0;
+            _GRA_clearCount = 0;
 
-            for (int i = 0; i < _GA_completeHeights.Length; i++)
+            for (int i = 0; i < _GRA_completeHeights.Length; i++)
             {
-                _GA_completeHeights[i] = -1;
+                _GRA_completeHeights[i] = -1;
             }
         }
 
 
-        private void GA_CopyCompleteHeights(int[] heights)
+        private void GRA_CopyCompleteHeights(int[] heights)
         {
             for (int i = 0; i < heights.Length; i++)
             {
-                _GA_completeHeights[i] = heights[i];
+                _GRA_completeHeights[i] = heights[i];
             }
         }
 
 
-        public void GA_AnimateClear()
+        public void GRA_AnimateClear()
         {
             if (CurrentClearAnimState == ClearAnimationState.Idle)
             {
                 CurrentClearAnimState = ClearAnimationState.Cleaning;
-                SendCustomEventDelayedSeconds(nameof(GA_AnimateClear), _GA_START_DELAY);
+                SendCustomEventDelayedSeconds(nameof(GRA_AnimateClear), _GRA_START_DELAY);
             }
             else if (CurrentClearAnimState == ClearAnimationState.Cleaning)
             {
-                bool isFinished = _GA_AnimateClearStep();
+                bool isFinished = _GRA_AnimateClearStep();
                 if (isFinished)
                 {
                     CurrentClearAnimState = ClearAnimationState.Shifting;
-                    SendCustomEventDelayedSeconds(nameof(GA_AnimateClear), _GA_SHIFTDOWN_DELAY);
+                    SendCustomEventDelayedSeconds(nameof(GRA_AnimateClear), _GRA_SHIFTDOWN_DELAY);
                 }
                 else
                 {
-                    SendCustomEventDelayedSeconds(nameof(GA_AnimateClear), _GA_CLEANING_INTERVAL);
+                    SendCustomEventDelayedSeconds(nameof(GRA_AnimateClear), _GRA_CLEANING_INTERVAL);
                 }
             }
             else if (CurrentClearAnimState == ClearAnimationState.Shifting)
             {
-                _GA_AnimateShiftDown();
-                SendCustomEventDelayedSeconds(nameof(_GA_FinishAnimation), _GA_FINISH_DELAY);
+                _GRA_AnimateShiftDown();
+                SendCustomEventDelayedSeconds(nameof(_GRA_FinishAnimation), _GRA_FINISH_DELAY);
             }
         }
 
 
-        public bool _GA_AnimateClearStep()
+        public bool _GRA_AnimateClearStep()
         {
             // この処理をwidthの分繰り返す
-            for (int i = 0; i < _GA_completeHeights.Length; i++)
+            for (int i = 0; i < _GRA_completeHeights.Length; i++)
             {
-                int y = _GA_completeHeights[i];
+                int y = _GRA_completeHeights[i];
                 if (y == -1) { continue; }
 
-                byte idx = GetIndex(_GA_clearCount, y);
-                GR_HideBlock(idx);
+                byte idx = GetIndex(_GRA_clearCount, y);
+                GRR_HideBlock(idx);
             }
 
-            _GA_clearCount++;
+            _GRA_clearCount++;
 
-            if (_GA_clearCount == WIDTH)
+            if (_GRA_clearCount == WIDTH)
             {
                 return true;
             }
@@ -90,31 +90,31 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        public void _GA_AnimateShiftDown()
+        public void _GRA_AnimateShiftDown()
         {
-            int minHeight = _GA_completeHeights[0];
+            int minHeight = _GRA_completeHeights[0];
 
             for (int y = minHeight; y < HEIGHT; y++)
             {
                 for (int x = 0; x < WIDTH; x++)
                 {
                     byte idx = GetIndex(x, y);
-                    if (G_grid[idx] == MinoType.None)
+                    if (grid[idx] == MinoType.None)
                     {
-                        GR_HideBlock(idx);
+                        GRR_HideBlock(idx);
                     }
                     else
                     {
-                        GR_ShowBlock(idx, G_grid[idx]);
+                        GRR_ShowBlock(idx, grid[idx]);
                     }
                 }
             }
         }
 
 
-        public void _GA_FinishAnimation()
+        public void _GRA_FinishAnimation()
         {
-            GA_Reset();
+            GRA_Reset();
             CurrentClearAnimState = ClearAnimationState.Completed;
         }
     }

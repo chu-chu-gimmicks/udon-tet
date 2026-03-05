@@ -44,13 +44,13 @@ namespace ChuChuGimmicks.UDONTET
 
         public int    GetPlayID()     { return PlayId; }
         public string GetPlayerName() { return PlayerName; }
-        public int    GetScore()      { return ST_Score; }
+        public int    GetScore()      { return STT_Score; }
 
-        public ushort GetLineStat()    { return ST_Line; }
-        public byte   GetComboStat()   { return ST_Combo; }
-        public ushort GetTSpinStat()   { return ST_TSpin; }
-        public byte   GetBTBStat()     { return ST_BTB; }
-        public ushort GetPerfectStat() { return ST_Perfect; }
+        public ushort GetLineStat()    { return STT_Line; }
+        public byte   GetComboStat()   { return STT_Combo; }
+        public ushort GetTSpinStat()   { return STT_TSpin; }
+        public byte   GetBTBStat()     { return STT_BTB; }
+        public ushort GetPerfectStat() { return STT_Perfect; }
 
 
 
@@ -59,12 +59,30 @@ namespace ChuChuGimmicks.UDONTET
         {
             ReflectOnlyInCollider = gameContext.reflectOnlyInCollider;
 
-            UI_HideFake();
+            UIM_HideFake();
 
             if (CurrentGameState == GameState.Title)
             {
-                GL_Reset();
+                GLP_Reset();
             }
+        }
+
+
+        public override void OnPlayerRestored(VRCPlayerApi player)
+        {
+            if (player == Networking.LocalPlayer)
+            {
+                
+            }
+        }
+
+
+        public override void OnPlayerRespawn(VRCPlayerApi player)
+        {
+            if (player != Networking.LocalPlayer) { return; }
+            if (!STM_IsSitting) { return; }
+
+            STM_IsSitting = false;
         }
 
 
@@ -76,7 +94,7 @@ namespace ChuChuGimmicks.UDONTET
                 // プレイ中だったなら
                 if (CurrentGameState == GameState.Playing)
                 {
-                    GL_OnGameOver();
+                    GLP_OnGameOver();
                 }
             }
         }

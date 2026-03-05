@@ -21,7 +21,7 @@ namespace ChuChuGimmicks.UDONTET
 
     public partial class InGame
     {
-        private readonly Vector2Int[][] _MS_minoShapes =
+        private readonly Vector2Int[][] _MSH_minoShapes =
         {
             new[] { new Vector2Int(0, 0), new Vector2Int(0, 1), new Vector2Int(-1, 0), new Vector2Int(1, 0) },  // T
             new[] { new Vector2Int(0, 0), new Vector2Int(-1, 0), new Vector2Int(1, 0), new Vector2Int(2, 0) },  // I
@@ -33,9 +33,9 @@ namespace ChuChuGimmicks.UDONTET
         };
 
 
-        private void MS_GetMino(Vector2Int[] minoPos, MinoType minoType)
+        private void MSH_GetMino(Vector2Int[] minoPos, MinoType minoType)
         {
-            CopyMino(_MS_minoShapes[(int)minoType], minoPos);
+            CopyMino(_MSH_minoShapes[(int)minoType], minoPos);
         }
     }
 }

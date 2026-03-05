@@ -9,45 +9,45 @@ namespace ChuChuGimmicks.UDONTET
     public partial class InGame
     {
         private const int _PREVIEW_WIDTH = 4, _PREVIEW_HEIGHT = 2;
-        private readonly Vector2Int _PR_INITIAL_HOLD_POS  = new Vector2Int(1, 0);
-        private readonly Vector2Int _PR_INITIAL_QUEUE_POS = new Vector2Int(1, 0);
+        private readonly Vector2Int _PVR_INITIAL_HOLD_POS  = new Vector2Int(1, 0);
+        private readonly Vector2Int _PVR_INITIAL_QUEUE_POS = new Vector2Int(1, 0);
 
-        private Vector2Int[] _PR_minoBuffer = new Vector2Int[4];
-
-
+        private Vector2Int[] _PVR_minoBuffer = new Vector2Int[4];
 
 
-        private void PR_Reset()
+
+
+        private void PVR_Reset()
         {
-            _PR_HideAllHoldBlock();
-            _PR_HideAllQueueBlock();
+            _PVR_HideAllHoldBlock();
+            _PVR_HideAllQueueBlock();
         }
 
 
-        private void PR_ShowHoldMino(MinoType minoType)
+        private void PVR_ShowHoldMino(MinoType minoType)
         {
-            _PR_HideAllHoldBlock();
+            _PVR_HideAllHoldBlock();
 
-            MS_GetMino(_PR_minoBuffer, minoType);
-            for (int i = 0; i < _PR_minoBuffer.Length; i++)
+            MSH_GetMino(_PVR_minoBuffer, minoType);
+            for (int i = 0; i < _PVR_minoBuffer.Length; i++)
             {
-                _PR_ShowHoldBlock(_PR_minoBuffer[i], minoType);
+                _PVR_ShowHoldBlock(_PVR_minoBuffer[i], minoType);
             }
         }
 
 
-        private void _PR_ShowHoldBlock(Vector2Int pos, MinoType minoType)
+        private void _PVR_ShowHoldBlock(Vector2Int pos, MinoType minoType)
         {
-            byte idx = GetPreviewIndex(pos.x + _PR_INITIAL_HOLD_POS.x, pos.y + _PR_INITIAL_HOLD_POS.y);
-            if (!_PR_IsIndexSafe(idx, holdMinoRenderers)) { return; }
-            if (!_PR_IsMinoTypeSafe(minoType)) { return; }
+            byte idx = GetPreviewIndex(pos.x + _PVR_INITIAL_HOLD_POS.x, pos.y + _PVR_INITIAL_HOLD_POS.y);
+            if (!_PVR_IsIndexSafe(idx, holdMinoRenderers)) { return; }
+            if (!_PVR_IsMinoTypeSafe(minoType)) { return; }
 
             holdMinoRenderers[idx].enabled = true;
             holdMinoRenderers[idx].sharedMaterial = minoMaterials[(int)minoType];
         }
 
 
-        private void _PR_HideAllHoldBlock()
+        private void _PVR_HideAllHoldBlock()
         {
             for (byte i = 0; i < holdMinoRenderers.Length; i++)
             {
@@ -56,33 +56,33 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void PR_ShowQueue(MinoType[] minoQueue)
+        private void PVR_ShowQueue(MinoType[] minoQueue)
         {
-            _PR_HideAllQueueBlock();
+            _PVR_HideAllQueueBlock();
 
             for (int i = 0; i < minoQueue.Length; i++)
             {
-                MS_GetMino(_PR_minoBuffer, minoQueue[i]);
-                for (int j = 0; j < _PR_minoBuffer.Length; j++)
+                MSH_GetMino(_PVR_minoBuffer, minoQueue[i]);
+                for (int j = 0; j < _PVR_minoBuffer.Length; j++)
                 {
-                    _PR_ShowQueueBlock(_PR_minoBuffer[j], minoQueue[i], i);
+                    _PVR_ShowQueueBlock(_PVR_minoBuffer[j], minoQueue[i], i);
                 }
             }
         }
 
 
-        private void _PR_ShowQueueBlock(Vector2Int pos, MinoType minoType, int index)
+        private void _PVR_ShowQueueBlock(Vector2Int pos, MinoType minoType, int index)
         {
-            byte idx = GetPreviewIndex(pos.x + _PR_INITIAL_QUEUE_POS.x, pos.y + _PR_INITIAL_QUEUE_POS.y + _PREVIEW_HEIGHT * index);
-            if (!_PR_IsIndexSafe(idx, nextMinoRenderers)) { return; }
-            if (!_PR_IsMinoTypeSafe(minoType)) { return; }
+            byte idx = GetPreviewIndex(pos.x + _PVR_INITIAL_QUEUE_POS.x, pos.y + _PVR_INITIAL_QUEUE_POS.y + _PREVIEW_HEIGHT * index);
+            if (!_PVR_IsIndexSafe(idx, nextMinoRenderers)) { return; }
+            if (!_PVR_IsMinoTypeSafe(minoType)) { return; }
 
             nextMinoRenderers[idx].enabled = true;
             nextMinoRenderers[idx].sharedMaterial = minoMaterials[(int)minoType];
         }
 
 
-        private void _PR_HideAllQueueBlock()
+        private void _PVR_HideAllQueueBlock()
         {
             for (byte i = 0; i < nextMinoRenderers.Length; i++)
             {
@@ -97,13 +97,13 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private bool _PR_IsIndexSafe(byte idx, Renderer[] renderers)
+        private bool _PVR_IsIndexSafe(byte idx, Renderer[] renderers)
         {
             return idx >= 0 && idx < renderers.Length;
         }
 
 
-        private bool _PR_IsMinoTypeSafe(MinoType minoType)
+        private bool _PVR_IsMinoTypeSafe(MinoType minoType)
         {
             return (int)minoType >= 0 && (int)minoType < minoMaterials.Length;
         }

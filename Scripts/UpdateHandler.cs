@@ -16,13 +16,13 @@ namespace ChuChuGimmicks.UDONTET
 
         private void Update()
         {
-            gameManager.GL_Update();
+            gameManager.GLP_Update();
         }
 
 
         private void LateUpdate()
         {
-            gameManager.GL_LateUpdate();
+            gameManager.GLP_LateUpdate();
         }
     }
 }

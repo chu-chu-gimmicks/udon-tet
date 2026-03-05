@@ -72,7 +72,7 @@ namespace ChuChuGimmicks.UDONTET
 
 
 
-        private void GS_Reset()
+        private void GST_Reset()
         {
             // PlayId = 0; これはやっちゃダメ
             PlayerName = Networking.GetOwner(this.gameObject).displayName;
@@ -88,7 +88,7 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private bool GS_CanReflectInput()
+        private bool GST_CanReflectInput()
         {
             if (CurrentGameState == GameState.Playing && CurrentClearAnimState == ClearAnimationState.Idle && Networking.IsOwner(this.gameObject))
             {
@@ -98,7 +98,7 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private bool GS_CanReflectSoftDrop()
+        private bool GST_CanReflectSoftDrop()
         {
             if (CurrentGameState == GameState.Playing && Networking.IsOwner(this.gameObject))
             {

@@ -24,47 +24,47 @@ namespace ChuChuGimmicks.UDONTET
 
     public partial class InGame
     {
-        private const float _MR_AUTOREPEAT_INTERVAL = 0.1f;
-        private const float _MR_AUTOREPEAT_THRESHOLD = 0.2f;
+        private const float _MVR_AUTOREPEAT_INTERVAL = 0.1f;
+        private const float _MVR_AUTOREPEAT_THRESHOLD = 0.2f;
 
-        private float _MR_timer = 0.0f;
-        private AxisState _MR_lastInput = AxisState.Neutral;
-        private _AutoRepeat _MR_ARState = _AutoRepeat.Idle;
+        private float _MVR_timer = 0.0f;
+        private AxisState _MVR_lastInput = AxisState.Neutral;
+        private _AutoRepeat _MVR_ARState = _AutoRepeat.Idle;
 
-        private Vector2Int[] _MR_minoBuffer = new Vector2Int[4];
-
-
+        private Vector2Int[] _MVR_minoBuffer = new Vector2Int[4];
 
 
-        private void MR_Reset()
+
+
+        private void MVR_Reset()
         {
-            _MR_timer = 0.0f;
-            _MR_lastInput = AxisState.Neutral;
-            _MR_ARState = _AutoRepeat.Idle;
+            _MVR_timer = 0.0f;
+            _MVR_lastInput = AxisState.Neutral;
+            _MVR_ARState = _AutoRepeat.Idle;
         }
 
 
-        private bool MR_ResolveMove(Vector2Int[] minoPos)
+        private bool MVR_ResolveMove(Vector2Int[] minoPos)
         {
-            if (!_MR_NeedsMove(out _MoveDir dir)) { return false; }
-            if (!GS_CanReflectInput()) { return false; }
+            if (!_MVR_NeedsMove(out _MoveDir dir)) { return false; }
+            if (!GST_CanReflectInput()) { return false; }
 
-            CopyMino(minoPos, _MR_minoBuffer);
-            bool success = _MR_TryMove(_MR_minoBuffer, dir);
+            CopyMino(minoPos, _MVR_minoBuffer);
+            bool success = _MVR_TryMove(_MVR_minoBuffer, dir);
             if (success)
             {
-                CopyMino(_MR_minoBuffer, minoPos);
+                CopyMino(_MVR_minoBuffer, minoPos);
                 return true;
             }
             return false;
         }
 
 
-        private bool _MR_NeedsMove(out _MoveDir dir)
+        private bool _MVR_NeedsMove(out _MoveDir dir)
         {
             dir = _MoveDir.None;
 
-            _MR_timer += Time.deltaTime;
+            _MVR_timer += Time.deltaTime;
 
             AxisState inputState = LHInputState;
             switch (inputState)
@@ -77,35 +77,35 @@ namespace ChuChuGimmicks.UDONTET
 
             if (inputState == AxisState.Neutral)
             {
-                _MR_timer = 0.0f;
-                _MR_lastInput = inputState;
-                _MR_ARState = _AutoRepeat.Idle;
+                _MVR_timer = 0.0f;
+                _MVR_lastInput = inputState;
+                _MVR_ARState = _AutoRepeat.Idle;
                 return false;
             }
 
-            if (_MR_lastInput != inputState)
+            if (_MVR_lastInput != inputState)
             {
-                _MR_ARState = _AutoRepeat.Idle;
+                _MVR_ARState = _AutoRepeat.Idle;
             }
-            _MR_lastInput = inputState;
+            _MVR_lastInput = inputState;
 
             // U# では Enum の Switch 文は使えないぽい！
-            if (_MR_ARState == _AutoRepeat.Idle)
+            if (_MVR_ARState == _AutoRepeat.Idle)
             {
-                _MR_ARState = _AutoRepeat.Waiting;
+                _MVR_ARState = _AutoRepeat.Waiting;
                 wantsToMove = true;
             }
-            else if (_MR_ARState == _AutoRepeat.Waiting)
+            else if (_MVR_ARState == _AutoRepeat.Waiting)
             {
-                if (_MR_timer >= _MR_AUTOREPEAT_THRESHOLD)
+                if (_MVR_timer >= _MVR_AUTOREPEAT_THRESHOLD)
                 {
-                    _MR_ARState = _AutoRepeat.Repeating;
+                    _MVR_ARState = _AutoRepeat.Repeating;
                     wantsToMove = true;
                 }
             }
-            else if (_MR_ARState == _AutoRepeat.Repeating)
+            else if (_MVR_ARState == _AutoRepeat.Repeating)
             {
-                if (_MR_timer >= _MR_AUTOREPEAT_INTERVAL)
+                if (_MVR_timer >= _MVR_AUTOREPEAT_INTERVAL)
                 {
                     wantsToMove = true;
                 }
@@ -113,7 +113,7 @@ namespace ChuChuGimmicks.UDONTET
 
             if (wantsToMove)
             {
-                _MR_timer = 0.0f;
+                _MVR_timer = 0.0f;
                 return true;
             }
 
@@ -121,18 +121,18 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private bool _MR_TryMove(Vector2Int[] minoPos, _MoveDir dir)
+        private bool _MVR_TryMove(Vector2Int[] minoPos, _MoveDir dir)
         {
             Debug.Log(dir);
 
-            for (int i = 0; i < _MR_minoBuffer.Length; i++)
+            for (int i = 0; i < _MVR_minoBuffer.Length; i++)
             {
-                _MR_minoBuffer[i] = minoPos[i] + new Vector2Int((int)dir, 0);
+                _MVR_minoBuffer[i] = minoPos[i] + new Vector2Int((int)dir, 0);
             }
 
-            if (G_IsMinoSafe(_MR_minoBuffer))
+            if (GRD_IsMinoSafe(_MVR_minoBuffer))
             {
-                CopyMino(_MR_minoBuffer, minoPos);
+                CopyMino(_MVR_minoBuffer, minoPos);
                 return true;
             }
             else

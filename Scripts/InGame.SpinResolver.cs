@@ -17,7 +17,7 @@ namespace ChuChuGimmicks.UDONTET
 
     public partial class InGame
     {
-        private readonly Vector2Int[][][][] _SR_srsTable =
+        private readonly Vector2Int[][][][] _SPR_srsTable =
         {
             // Clockwise
             new Vector2Int[][][]
@@ -61,39 +61,39 @@ namespace ChuChuGimmicks.UDONTET
             }
         };
 
-        private AxisState _SR_lastInput = AxisState.Neutral;
+        private AxisState _SPR_lastInput = AxisState.Neutral;
 
-        private Vector2Int[] _SR_minoBuffer = new Vector2Int[4];
-
-
+        private Vector2Int[] _SPR_minoBuffer = new Vector2Int[4];
 
 
-        private void SR_Reset()
+
+
+        private void SPR_Reset()
         {
-            _SR_lastInput = AxisState.Neutral;
+            _SPR_lastInput = AxisState.Neutral;
         }
 
 
-        private bool SR_ResolveSpin(Vector2Int[] minoPos)
+        private bool SPR_ResolveSpin(Vector2Int[] minoPos)
         {
-            if (!_SR_NeedsSpin(out bool isClockwise)) { return false; }
-            if (!GS_CanReflectInput()) { return false; }
+            if (!_SPR_NeedsSpin(out bool isClockwise)) { return false; }
+            if (!GST_CanReflectInput()) { return false; }
             if (CurrentMinoType == MinoType.O) { return false; }
 
-            CopyMino(minoPos, _SR_minoBuffer);
-            _SR_ApplyBaseSpin(CurrentMinoType, minoPos, _SR_minoBuffer, isClockwise);
-            bool success = _SR_TryApplySRS(CurrentMinoType, _SR_minoBuffer, isClockwise, Angle);
+            CopyMino(minoPos, _SPR_minoBuffer);
+            _SPR_ApplyBaseSpin(CurrentMinoType, minoPos, _SPR_minoBuffer, isClockwise);
+            bool success = _SPR_TryApplySRS(CurrentMinoType, _SPR_minoBuffer, isClockwise, Angle);
             if (success)
             {
                 Angle += isClockwise ? -90 : 90;
-                CopyMino(_SR_minoBuffer, minoPos);
+                CopyMino(_SPR_minoBuffer, minoPos);
                 return true;
             }
             return false;
         }
 
 
-        private bool _SR_NeedsSpin(out bool isClockwise)
+        private bool _SPR_NeedsSpin(out bool isClockwise)
         {
             isClockwise = false;
 
@@ -105,14 +105,14 @@ namespace ChuChuGimmicks.UDONTET
                 case AxisState.Positive: isClockwise = true;  break;
             }
 
-            bool isChanged = (_SR_lastInput != inputState);
-            _SR_lastInput = inputState;
+            bool isChanged = (_SPR_lastInput != inputState);
+            _SPR_lastInput = inputState;
 
             return isChanged && (inputState != AxisState.Neutral);
         }
 
 
-        private void _SR_ApplyBaseSpin(MinoType minoType, Vector2Int[] source, Vector2Int[] buffer, bool isClockwise)
+        private void _SPR_ApplyBaseSpin(MinoType minoType, Vector2Int[] source, Vector2Int[] buffer, bool isClockwise)
         {
             // Iミノは他のミノと回転の中心が異なるため、特別に回転処理を行う
             if (minoType == MinoType.I)
@@ -170,13 +170,13 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private bool _SR_TryApplySRS(MinoType minoType, Vector2Int[] buffer, bool isClockwise, int angle)
+        private bool _SPR_TryApplySRS(MinoType minoType, Vector2Int[] buffer, bool isClockwise, int angle)
         {
             int dirIndex = isClockwise ? 0 : 1;
             int minoTypeIndex = (minoType == MinoType.I) ? 1 : 0;
             int angleIndex = angle / 90;
 
-            Vector2Int[] offsets = _SR_srsTable[dirIndex][minoTypeIndex][angleIndex];
+            Vector2Int[] offsets = _SPR_srsTable[dirIndex][minoTypeIndex][angleIndex];
 
             for (int i = 0; i < offsets.Length; i++)
             {
@@ -187,12 +187,12 @@ namespace ChuChuGimmicks.UDONTET
                 }
 
                 // 判定
-                if (G_IsMinoSafe(buffer))
+                if (GRD_IsMinoSafe(buffer))
                 {
                     if (minoType == MinoType.T)
                     {
                         bool hasAppliedPointFive = (i == offsets.Length - 1);
-                        SR_CheckTSpin(buffer, hasAppliedPointFive);
+                        SPR_CheckTSpin(buffer, hasAppliedPointFive);
                     }
                     return true;
                 }
@@ -210,7 +210,7 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void SR_CheckTSpin(Vector2Int[] minoPos, bool hasAppliedPointFive)
+        private void SPR_CheckTSpin(Vector2Int[] minoPos, bool hasAppliedPointFive)
         {
             TSpinState tSpinState = TSpinState.None;
             int point = 0;
@@ -222,15 +222,15 @@ namespace ChuChuGimmicks.UDONTET
 
             // 凸側
             // 左上
-            if (_GM_IsOccupied(convex - rightDir)) { point += 105; }
+            if (GRD_IsOccupied(convex - rightDir)) { point += 105; }
             // 右上
-            if (_GM_IsOccupied(convex + rightDir)) { point += 105; }
+            if (GRD_IsOccupied(convex + rightDir)) { point += 105; }
 
             // 直線側
             // 左下
-            if (_GM_IsOccupied(center - dir - rightDir)) { point += 100; }
+            if (GRD_IsOccupied(center - dir - rightDir)) { point += 100; }
             // 右下
-            if (_GM_IsOccupied(center - dir + rightDir)) { point += 100; }
+            if (GRD_IsOccupied(center - dir + rightDir)) { point += 100; }
 
             Debug.Log($"TSpin Point = {point}");
 
@@ -253,7 +253,7 @@ namespace ChuChuGimmicks.UDONTET
                 tSpinState = TSpinState.Normal;
             }
 
-            DR_TSpin = tSpinState;
+            DRS_TSpin = tSpinState;
         }
     }
 }

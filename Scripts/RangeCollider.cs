@@ -1,4 +1,4 @@
-﻿
+
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -11,13 +11,12 @@ namespace ChuChuGimmicks.UDONTET
     {
         private const float INTERVAL = 2.0f;
         private const float HEIGHT_OFFSET = 0.1f;
-        private const float EPSILON = 0.01f;
 
         [SerializeField] private InGame inGameManager;
 
         [SerializeField] private GameObject targetCollider;
 
-        private float timer = float.MinValue;
+        private bool isPending = false;
 
 
 
@@ -31,23 +30,23 @@ namespace ChuChuGimmicks.UDONTET
                     targetCollider.SetActive(false);
                 }
 
+                if (isPending) { return; }
                 SendCustomEventDelayedSeconds(nameof(JudgeByCollider), INTERVAL);
-                timer = Time.time - INTERVAL / 2.0f;
             }
-        }
-
-
-        private void OnDisable()
-        {
-            timer = float.MaxValue;
         }
 
 
         public void JudgeByCollider()
         {
-            if (Time.time + EPSILON < timer + INTERVAL) { return; }
-            SendCustomEventDelayedSeconds(nameof(JudgeByCollider), INTERVAL);
-            timer = Time.time;
+            if (this.enabled)
+            {
+                SendCustomEventDelayedSeconds(nameof(JudgeByCollider), INTERVAL);
+            }
+            else
+            {
+                isPending = false;
+                return;
+            }
 
             bool isinCollider = false;
 

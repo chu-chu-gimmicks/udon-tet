@@ -8,57 +8,57 @@ namespace ChuChuGimmicks.UDONTET
 {
     public partial class InGame
     {
-        private MinoType HR_HoldMinoType { get; set; } = MinoType.None;
+        private MinoType HLR_HoldMinoType { get; set; } = MinoType.None;
 
-        private ButtonState _HR_lastInputL = ButtonState.Released;
-        private ButtonState _HR_lastInputR = ButtonState.Released;
+        private ButtonState _HLR_lastInputL = ButtonState.Released;
+        private ButtonState _HLR_lastInputR = ButtonState.Released;
 
-        private Vector2Int[] _HR_minoBuffer = new Vector2Int[4];
-
-
+        private Vector2Int[] _HLR_minoBuffer = new Vector2Int[4];
 
 
-        private void HR_Reset()
+
+
+        private void HLR_Reset()
         {
-            HR_HoldMinoType = MinoType.None;
-            _HR_lastInputL = ButtonState.Released;
-            _HR_lastInputR = ButtonState.Released;
+            HLR_HoldMinoType = MinoType.None;
+            _HLR_lastInputL = ButtonState.Released;
+            _HLR_lastInputR = ButtonState.Released;
         }
 
 
-        private bool HR_ResolveHold(Vector2Int[] minoPos, out bool isFirstHold)
+        private bool HLR_ResolveHold(Vector2Int[] minoPos, out bool isFirstHold)
         {
             isFirstHold = false;
 
             if (!CanHold) { return false; }
-            if (!_HR_NeedsHold()) { return false; }
-            if (!GS_CanReflectInput()) { return false; }
+            if (!_HLR_NeedsHold()) { return false; }
+            if (!GST_CanReflectInput()) { return false; }
 
-            CopyMino(minoPos, _HR_minoBuffer);
+            CopyMino(minoPos, _HLR_minoBuffer);
 
-            if (HR_HoldMinoType == MinoType.None)
+            if (HLR_HoldMinoType == MinoType.None)
             {
-                HR_HoldMinoType = CurrentMinoType;
+                HLR_HoldMinoType = CurrentMinoType;
                 isFirstHold = true;
             }
             else
             {
-                MinoType tmp = HR_HoldMinoType;
-                HR_HoldMinoType = CurrentMinoType;
+                MinoType tmp = HLR_HoldMinoType;
+                HLR_HoldMinoType = CurrentMinoType;
                 CurrentMinoType = tmp;
             }
             return true;
         }
 
 
-        private bool _HR_NeedsHold()
+        private bool _HLR_NeedsHold()
         {
             ButtonState inputStateL = LGrabInputState;
             ButtonState inputStateR = RGrabInputState;
-            bool isJustPressed = (inputStateL != ButtonState.Released && _HR_lastInputL == ButtonState.Released) || (inputStateR != ButtonState.Released && _HR_lastInputR == ButtonState.Released);
-            _HR_lastInputL = inputStateL;
-            _HR_lastInputR = inputStateR;
-            return isJustPressed;
+            bool justPressed = (inputStateL != ButtonState.Released && _HLR_lastInputL == ButtonState.Released) || (inputStateR != ButtonState.Released && _HLR_lastInputR == ButtonState.Released);
+            _HLR_lastInputL = inputStateL;
+            _HLR_lastInputR = inputStateR;
+            return justPressed;
         }
     }
 }

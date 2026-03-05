@@ -10,13 +10,19 @@ namespace ChuChuGimmicks.UDONTET
     {
         public void UII_OnResetButtonPressed()
         {
-            if (CurrentGameState == GameState.Playing) { return; }
-
-            GL_UpdateGameState();
-
             if (CurrentGameState == GameState.Playing)
             {
-                CM_EnterChair();
+                STM_EnterChair();
+                UIM_Continue();
+            }
+            else
+            {
+                GLP_UpdateGameState();
+
+                if (CurrentGameState == GameState.Playing)
+                {
+                    STM_EnterChair();
+                }
             }
         }
     }

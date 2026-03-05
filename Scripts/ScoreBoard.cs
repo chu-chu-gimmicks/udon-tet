@@ -1,4 +1,5 @@
 
+using ChuChuGimmicks.UDONBINGO;
 using System;
 using System.Reflection;
 using TMPro;
@@ -33,25 +34,21 @@ namespace ChuChuGimmicks.UDONTET
 
 
 
-        private float timer = 0.0f;
-        private const float Interval = 2.0f;
-        private const float Epsilon = 0.01f;
-
         [Header("Max 16")]
         [SerializeField] private GameContext[] udontets;
 
         [Space(80)]
         [Header("---- Don't Touch ----")]
+        [SerializeField] private UserDataAccessor userDataAccessor;
+
         [SerializeField] private TextMeshProUGUI yourHighScoreTMP;
         [SerializeField] private TextMeshProUGUI[] nameTMPs, scoreTMPs, achievementsValueTMP, achievementsNameTMP;
 
+        private bool isPending = false;
+        private const float INTERVAL = 2.0f;
 
-        [SerializeField] private ChuChuGimmicks.UDONTET.UserData referenceUserData;
-        private ChuChuGimmicks.UDONTET.UserData userData;
-        private bool isRestored = false;
         private int yourHighScore = 0;
 
-        private string localPlayerName = string.Empty;
         [UdonSynced] private short[] playIds = new short[16];
         [UdonSynced] private string[] playerNames = new string[8];
         [UdonSynced] private int[] scores = new int[8];
@@ -72,19 +69,13 @@ namespace ChuChuGimmicks.UDONTET
 
         void OnEnable()
         {
-            ResetYourHighScore();
-            SendCustomEventDelayedSeconds(nameof(CheckResult), Interval);
-            timer = Time.time - Interval / 2.0f;
-
-            if (localPlayerName == string.Empty)
-            {
-                localPlayerName = Networking.LocalPlayer.displayName;
-            }
-
             for (int i = 0; i < playerNames.Length; i++)
             {
                 playerNames[i] = "--------";
             }
+
+            if (isPending) { return; }
+            SendCustomEventDelayedSeconds(nameof(CheckResult), INTERVAL);
         }
 
 
@@ -92,88 +83,70 @@ namespace ChuChuGimmicks.UDONTET
 
         public void CheckResult()
         {
-            if (udontets == null || udontets.Length == 0) { return; }
+            if (!Utilities.IsValid(udontets) || udontets.Length == 0) { return; }
 
-            if (Time.time + Epsilon < timer + Interval) { return; }
-            SendCustomEventDelayedSeconds(nameof(CheckResult), Interval);
-            timer = Time.time;
+            // 予約するか判断
+            if (this.enabled)
+            {
+                SendCustomEventDelayedSeconds(nameof(CheckResult), INTERVAL);
+            }
+            else
+            {
+                isPending = false;
+                return;
+            }
 
-            bool isOwner = Networking.IsOwner(this.gameObject);
+            UpdateScoreBoard();
+        }
+
+
+        private void UpdateScoreBoard()
+        {
+            UpdateYHS();
+
+            if (!Networking.IsOwner(this.gameObject)) { return; }
+
+            bool isChanged = false;
 
             for (int i = 0; i < udontets.Length; i++)
             {
                 if (!Utilities.IsValid(udontets[i])) { continue; }
                 if (udontets[i].inGameManager.CurrentGameState == GameState.Playing) { continue; }
 
-                int playId = udontets[i].inGameManager.GetPlayID();
+                int playId        = udontets[i].inGameManager.GetPlayID();
                 string playerName = udontets[i].inGameManager.GetPlayerName();
-                int score = udontets[i].inGameManager.GetScore();
+                int score         = udontets[i].inGameManager.GetScore();
 
-                if (localPlayerName == playerName && isRestored)
-                {
-                    UpdateYourHighScore(score);
-                }
-
-                if (!isOwner) { continue; }
-
-                if (playIds[i] != playId)
+                if (playIds[i] > playId)
                 {
                     playIds[i] = (short)playId;
 
-                    UpdateRanking(playerName, score, out bool rChanged);
-                    UpdateAchievements(i, playerName, out bool aChanged);
-
-                    if (rChanged || aChanged)
+                    if (UpdateRanking(playerName, score) || UpdateAchievements(i, playerName))
                     {
-                        RequestSerialization();
+                        isChanged = true;
                     }
                 }
             }
+
+            if (isChanged)
+            {
+                RequestSerialization();
+            }
         }
 
 
-
-
-        public void ResetYourHighScore()
+        private void UpdateYHS()
         {
-            if (!Utilities.IsValid(userData))
-            {
-                userData = (ChuChuGimmicks.UDONTET.UserData)Networking.FindComponentInPlayerObjects(Networking.LocalPlayer, referenceUserData);
-                if (!Utilities.IsValid(userData)) { return; }
-            }
-
-            if (!userData.GetIsRestored())
-            {
-                SendCustomEventDelayedSeconds(nameof(ResetYourHighScore), 1.0f);
-                isRestored = false;
-                return;
-            }
-            else
-            {
-                isRestored = true;
-            }
-
-            yourHighScore = userData.GetYourHighScore();
+            int value = userDataAccessor.GetYourHighScore();
+            if (value <= yourHighScore) { return; }
+            yourHighScore = value;
             yourHighScoreTMP.text = $"{yourHighScore}";
         }
 
 
-        private void UpdateYourHighScore(int score)
+        private bool UpdateRanking(string name, int score)
         {
-            if (!Utilities.IsValid(userData)) { return; }
-            if (score <= yourHighScore) { return; }
-
-            yourHighScore = score;
-            yourHighScoreTMP.text = $"{yourHighScore}";
-            userData.SetYourHighScore(yourHighScore);
-        }
-
-
-        private void UpdateRanking(string name, int score, out bool changed)
-        {
-            changed = false;
-
-            if (score <= scores[scores.Length - 1]) { return; }
+            if (score <= scores[scores.Length - 1]) { return false; }
 
             int retryIndex = -1;
             for (int i = 0; i < playerNames.Length; i++)
@@ -189,7 +162,7 @@ namespace ChuChuGimmicks.UDONTET
             {
                 if (score <= scores[retryIndex])
                 {
-                    return;
+                    return false;
                 }
                 else
                 {
@@ -220,7 +193,7 @@ namespace ChuChuGimmicks.UDONTET
 
             UpdateRankingTMP();
 
-            changed = true;
+            return true;
         }
 
 
@@ -234,10 +207,10 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void UpdateAchievements(int num, string name, out bool changed)
+        private bool UpdateAchievements(int num, string name)
         {
-            changed = false;
-            if (achievementsValueTMP.Length < 5) { return; }
+            bool isChanged = false;
+            if (achievementsValueTMP.Length < 5) { return isChanged; }
 
             ushort totalLines = udontets[num].inGameManager.GetLineStat();
             byte maxCombo = udontets[num].inGameManager.GetComboStat();
@@ -250,38 +223,40 @@ namespace ChuChuGimmicks.UDONTET
                 maxTotalLines = totalLines;
                 maxTotalLinesName = name;
 
-                changed = true;
+                isChanged = true;
             }
             if (maxCombo > maxMaxCombo && maxCombo > 1)
             {
                 maxMaxCombo = maxCombo;
                 maxMaxComboName = name;
 
-                changed = true;
+                isChanged = true;
             }
             if (totalTSpins > maxTotalTSpins)
             {
                 maxTotalTSpins = totalTSpins;
                 maxTotalTSpinsName = name;
 
-                changed = true;
+                isChanged = true;
             }
             if (maxBTB > maxMaxBTB && maxBTB > 1)
             {
                 maxMaxBTB = maxBTB;
                 maxMaxBTBName = name;
 
-                changed = true;
+                isChanged = true;
             }
             if (totalPerfects > maxTotalPerfects)
             {
                 maxTotalPerfects = totalPerfects;
                 maxTotalPerfectsName = name;
 
-                changed = true;
+                isChanged = true;
             }
 
-            if (changed) { UpdateAchievementsTMP(); }
+            if (isChanged) { UpdateAchievementsTMP(); }
+
+            return isChanged;
         }
 
 
