@@ -1,5 +1,4 @@
 
-using TMPro;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -9,11 +8,11 @@ namespace ChuChuGimmicks.UDONTET
 {
     public partial class InGame
     {
-        [SerializeField] private GameContext gameContext;
+        [SerializeField] private Adapter adapter;
         [SerializeField] private UpdateHandler updateHandler;
         [SerializeField] private RangeCollider rangeCollider;
         [SerializeField] private UserDataAccessor userDataAccessor;
-        [Space(16)]
+        [Space(32)]
 
 
 
@@ -25,36 +24,40 @@ namespace ChuChuGimmicks.UDONTET
 
         [SerializeField] private Renderer[] holdMinoRenderers;
         [SerializeField] private Renderer[] nextMinoRenderers;
-        [Space(16)]
+        [Space(32)]
 
 
 
 
         [SerializeField] private GameObject logoImage;
+        [SerializeField] private TMPro.TextMeshProUGUI playerNameLabel;
+        [SerializeField] private GameObject yourHighScoreUIParent;
+        [SerializeField] private TMPro.TextMeshProUGUI yourHighScoreLabel;
+        [Space(16)]
+        [SerializeField] private GameObject statsUIParent;
+        [SerializeField] private TMPro.TextMeshProUGUI levelLabel, scoreLabel, scoreDeltaLabel;
+        [SerializeField] private TMPro.TextMeshProUGUI sLineLabel, sComboLabel, sTSpinLabel, sBTBLabel, sPerfectLabel;
+        [Space(16)]
+        [SerializeField] private GameObject pupupUIParent;
+        [SerializeField] private TMPro.TextMeshProUGUI pLineLabel, pComboLabel, pTSpinLabel, pBTBLabel, pPerfectLabel;
+        [Space(16)]
+        [SerializeField] private GameObject gameOverUIParent;
+        [Space(16)]
         [SerializeField] private GameObject resetButton;
-        [SerializeField] private TextMeshProUGUI resetButtonTMP;
-        [SerializeField] private TextMeshProUGUI nameTMP;
+        [SerializeField] private TMPro.TextMeshProUGUI resetButtonLabel;
         [Space(16)]
-        [SerializeField] private GameObject statUIParent;
-        [SerializeField] private TextMeshProUGUI levelTMP, scoreTMP, scoreDeltaTMP;
-        [SerializeField] private TextMeshProUGUI sLineTMP, sComboTMP, sTSpinTMP, sBTBTMP, sPerfectTMP;
-        [Space(16)]
-        [SerializeField] private GameObject techniqueUIParent;
-        [SerializeField] private TextMeshProUGUI tLineTMP, tComboTMP, tTSpinTMP, tBTBTMP, tPerfectTMP;
-        [Space(16)]
-        [SerializeField] private GameObject gameOverUI;
         [SerializeField] private Renderer guide;
         [SerializeField] private Material[] guideMaterial;
         [SerializeField] private GameObject titleMinos;
         [SerializeField] private GameObject fake;
-        [Space(16)]
+        [Space(32)]
 
 
 
 
         [SerializeField] private VRCStation station;
         [SerializeField] private Transform viewHeight;
-        [SerializeField] private Transform stationUpperLimit;
         [SerializeField] private Transform stationLowerLimit;
+        [SerializeField] private Transform stationUpperLimit;
     }
 }

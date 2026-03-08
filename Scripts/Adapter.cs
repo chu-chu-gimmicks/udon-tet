@@ -1,4 +1,4 @@
-﻿
+
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -8,7 +8,7 @@ using VRC.Udon;
 namespace ChuChuGimmicks.UDONTET
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-    public class GameContext : UdonSharpBehaviour
+    public class Adapter : UdonSharpBehaviour
     {
         [Header("ON: Reflect synced data only in the collider.\nOFF: Reflect synced data anywhere.")]
         [SerializeField] public bool reflectOnlyInCollider = true;
@@ -19,7 +19,7 @@ namespace ChuChuGimmicks.UDONTET
         //[SerializeField] public UdonChips udonChips;
         //[SerializeField] public float rate = 0.1f;
 
-        [Space(80)]
+        [Space(64)]
         [Header("---- Don't Touch ----")]
         [SerializeField] public InGame inGameManager;
 

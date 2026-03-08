@@ -36,6 +36,7 @@ namespace ChuChuGimmicks.UDONTET
             {
                 CurrentGameState = GameState.Title;
                 GLP_Reset();
+                UIM_ShowYourHighScore();
             }
             else if (CurrentGameState == GameState.Title)
             {
@@ -211,6 +212,8 @@ namespace ChuChuGimmicks.UDONTET
             rangeCollider.enabled = false;
 
             SYS_RequestSync();
+
+            userDataAccessor.SetYourHighScore(STT_Score + DRS_ScoreDelta);
         }
 
 

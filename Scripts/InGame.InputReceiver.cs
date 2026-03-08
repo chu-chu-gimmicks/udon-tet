@@ -231,7 +231,7 @@ namespace ChuChuGimmicks.UDONTET
         private bool _INR_CanReceiveInput(bool isInVR)
         {
             return
-                STM_IsSitting
+                IsSitting
                 && Networking.LocalPlayer.IsUserInVR() == isInVR
                 && (!Utilities.IsValid(VRC.SDK3.Rendering.VRCCameraSettings.PhotoCamera) || !VRC.SDK3.Rendering.VRCCameraSettings.PhotoCamera.Active);
         }

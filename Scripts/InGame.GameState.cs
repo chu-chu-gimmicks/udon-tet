@@ -61,6 +61,8 @@ namespace ChuChuGimmicks.UDONTET
         private int PlayId { get; set; } = 0; // 各プレイの識別ID
         private string PlayerName { get; set; } = string.Empty;
 
+        private bool IsSitting { get; set; } = false;
+
         private Vector2Int[] currentMinoPos = new Vector2Int[4];
         private MinoType CurrentMinoType { get; set; } = MinoType.None;
         private int _angle = 0;
@@ -74,7 +76,6 @@ namespace ChuChuGimmicks.UDONTET
 
         private void GST_Reset()
         {
-            // PlayId = 0; これはやっちゃダメ
             PlayerName = Networking.GetOwner(this.gameObject).displayName;
 
             for (int i = 0; i < currentMinoPos.Length; i++)
@@ -88,9 +89,9 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private bool GST_CanReflectInput()
+        private bool GST_IsInGame()
         {
-            if (CurrentGameState == GameState.Playing && CurrentClearAnimState == ClearAnimationState.Idle && Networking.IsOwner(this.gameObject))
+            if (CurrentGameState == GameState.Playing && Networking.IsOwner(this.gameObject))
             {
                 return true;
             }
@@ -98,9 +99,9 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private bool GST_CanReflectSoftDrop()
+        private bool GST_CanReflectInput()
         {
-            if (CurrentGameState == GameState.Playing && Networking.IsOwner(this.gameObject))
+            if (CurrentGameState == GameState.Playing && CurrentClearAnimState == ClearAnimationState.Idle && Networking.IsOwner(this.gameObject))
             {
                 return true;
             }

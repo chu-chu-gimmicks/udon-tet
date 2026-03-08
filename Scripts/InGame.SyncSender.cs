@@ -120,17 +120,17 @@ namespace ChuChuGimmicks.UDONTET
             SYD_score = STT_Score;
             SYD_scoreDelta = DRS_ScoreDelta;
 
-            SYD_line  = DRS_Line;
-            SYD_combo = DRS_Combo;
-            SYD_tSpin = (byte)(int)DRS_TSpin;
-            SYD_bTB   = DRS_BTB;
-            SYD_block = DRS_Block;
-
             SYD_lineStat    = STT_Line;
             SYD_comboStat   = STT_Combo;
             SYD_tSpinStat   = STT_TSpin;
             SYD_bTBStat     = STT_BTB;
             SYD_perfectStat = STT_Perfect;
+
+            SYD_line  = DRS_Line;
+            SYD_combo = DRS_Combo;
+            SYD_tSpin = (byte)(int)DRS_TSpin;
+            SYD_bTB   = DRS_BTB;
+            SYD_block = DRS_Block;
         }
 
 

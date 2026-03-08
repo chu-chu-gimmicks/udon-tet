@@ -32,6 +32,7 @@ namespace ChuChuGimmicks.UDONTET
 
                 if (isPending) { return; }
                 SendCustomEventDelayedSeconds(nameof(JudgeByCollider), INTERVAL);
+                isPending = true;
             }
         }
 

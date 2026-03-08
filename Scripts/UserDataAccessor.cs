@@ -14,17 +14,7 @@ namespace ChuChuGimmicks.UDONTET
 
         private ChuChuGimmicks.UDONTET.UserData userData;
 
-        private bool isRestored = false;
 
-
-
-
-        public override void OnPlayerRestored(VRCPlayerApi player)
-        {
-            if (player != Networking.LocalPlayer) { return; }
-            isRestored = true;
-            EnsureAccessToUserData();
-        }
 
 
         public int GetYourHighScore()
@@ -43,10 +33,8 @@ namespace ChuChuGimmicks.UDONTET
 
         private bool EnsureAccessToUserData()
         {
-            if (!isRestored) { return false; }
-
             if (Utilities.IsValid(userData)) { return true; }
-            
+
             userData = (ChuChuGimmicks.UDONTET.UserData)Networking.FindComponentInPlayerObjects(Networking.LocalPlayer, referenceUserData);
 
             if (Utilities.IsValid(userData))

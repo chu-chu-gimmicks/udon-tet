@@ -13,7 +13,7 @@ namespace ChuChuGimmicks.UDONTET
             if (CurrentGameState == GameState.Playing)
             {
                 STM_EnterChair();
-                UIM_Continue();
+                UIM_Resume();
             }
             else
             {

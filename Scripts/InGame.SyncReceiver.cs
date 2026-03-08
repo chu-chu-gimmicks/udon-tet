@@ -28,7 +28,7 @@ namespace ChuChuGimmicks.UDONTET
         private void _SYR_OnSynced()
         {
             _SYR_DecompressData();
-            _SYR_CopyFromSyncData();
+            _SYR_CopyFromSyncedData();
 
             if (CurrentGameState == GameState.Title)
             {
@@ -42,7 +42,7 @@ namespace ChuChuGimmicks.UDONTET
                 {
                     if (ReflectOnlyInCollider && !IsInCollider) { return; }
 
-                    _SYR_SynchronizeGrid();
+                    _SYR_ReflectGrid();
                     GRR_ShowMino(currentMinoPos, CurrentMinoType);
                     PVR_ShowHoldMino(HLR_HoldMinoType);
                     PVR_ShowQueue(SPN_minoQueue);
@@ -50,7 +50,7 @@ namespace ChuChuGimmicks.UDONTET
                 }
                 else
                 {
-                    _SYR_StartSyncDataReflection();
+                    _SYR_ReflectFirstSync();
 
                     rangeCollider.enabled = true;
                     _SYR_isAlreadySynced = true;
@@ -58,7 +58,7 @@ namespace ChuChuGimmicks.UDONTET
             }
             else if (CurrentGameState == GameState.GameOver)
             {
-                _SYR_StartSyncDataReflection();
+                _SYR_ReflectFirstSync();
                 UIM_OnGameOver();
 
                 rangeCollider.enabled = false;
@@ -79,7 +79,7 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void _SYR_CopyFromSyncData()
+        private void _SYR_CopyFromSyncedData()
         {
             PlayId = SYD_playId;
 
@@ -87,25 +87,25 @@ namespace ChuChuGimmicks.UDONTET
             STT_Score      = SYD_score;
             DRS_ScoreDelta = SYD_scoreDelta;
 
-            DRS_Line  = SYD_line;
-            DRS_Combo = SYD_combo;
-            DRS_TSpin = (TSpinState)SYD_tSpin;
-            DRS_BTB   = SYD_bTB;
-            DRS_Block = SYD_block;
-
             STT_Line    = SYD_lineStat;
             STT_Combo   = SYD_comboStat;
             STT_TSpin   = SYD_tSpinStat;
             STT_BTB     = SYD_bTBStat;
             STT_Perfect = SYD_perfectStat;
+
+            DRS_Line  = SYD_line;
+            DRS_Combo = SYD_combo;
+            DRS_TSpin = (TSpinState)SYD_tSpin;
+            DRS_BTB   = SYD_bTB;
+            DRS_Block = SYD_block;
         }
 
 
-        private void _SYR_StartSyncDataReflection()
+        private void _SYR_ReflectFirstSync()
         {
             if (Networking.IsOwner(this.gameObject)) { return; }
 
-            _SYR_SynchronizeGrid();
+            _SYR_ReflectGrid();
             if (CurrentGameState == GameState.Playing)
             {
                 GRR_ShowMino(currentMinoPos, CurrentMinoType);
@@ -123,11 +123,18 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void _SYR_SynchronizeGrid()
+        private void _SYR_ReflectGrid()
         {
             for (byte i = 0; i < grid.Length; i++)
             {
-                GRR_ShowBlock(i, grid[i]);
+                if (grid[i] == MinoType.None)
+                {
+                    GRR_HideBlock(i);
+                }
+                else
+                {
+                    GRR_ShowBlock(i, grid[i]);
+                }
             }
         }
 

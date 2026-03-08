@@ -31,7 +31,7 @@ namespace ChuChuGimmicks.UDONTET
         private bool SDR_ResolveSoftDrop()
         {
             if (!_SDR_HasChangedSoftDropState(out _SoftDropActive softDropState)) { return false; }
-            if (!GST_CanReflectSoftDrop()) { return false; }
+            if (!GST_IsInGame()) { return false; }
 
             if (softDropState == _SoftDropActive.Inactive)
             {

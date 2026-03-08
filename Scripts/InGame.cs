@@ -12,25 +12,24 @@ namespace ChuChuGimmicks.UDONTET
         #region UCS
         private void UpdateUCS(int newScore)
         {
-            //if (Utilities.IsValid(gameContext.udonChips))
+            //if (Utilities.IsValid(adapter.udonChips))
             //{
-            //    gameContext.SetUdonChips(newScore);
+            //    adapter.SetUdonChips(newScore);
             //}
         }
         #endregion
 
 
         #region Debug
-        [SerializeField] private TMPro.TextMeshProUGUI debugTMP;
+        [SerializeField] private TMPro.TextMeshProUGUI debugLabel;
         //private int debugCount = 0;
-        //public void Chu_Debug(string text)
-        //{
-        //    if (debugTMP != null)
-        //    {
-        //        debugCount++;
-        //        debugTMP.text = $"{debugCount}: {text}";
-        //    }
-        //}
+        // public void Chu_Debug(string text)
+        // {
+        //     if (Utilities.IsValid(debugLabel)) { return; }
+
+        //     debugCount++;
+        //     debugLabel.text = $"{debugCount}: {text}";
+        // }
 
 
         //public override void OnPostSerialization(SerializationResult result)
@@ -44,7 +43,7 @@ namespace ChuChuGimmicks.UDONTET
 
         public int    GetPlayID()     { return PlayId; }
         public string GetPlayerName() { return PlayerName; }
-        public int    GetScore()      { return STT_Score; }
+        public int    GetScore()      { return STT_Score + DRS_ScoreDelta; }
 
         public ushort GetLineStat()    { return STT_Line; }
         public byte   GetComboStat()   { return STT_Combo; }
@@ -57,45 +56,42 @@ namespace ChuChuGimmicks.UDONTET
 
         private void OnEnable()
         {
-            ReflectOnlyInCollider = gameContext.reflectOnlyInCollider;
+            ReflectOnlyInCollider = adapter.reflectOnlyInCollider;
 
             UIM_HideFake();
 
             if (CurrentGameState == GameState.Title)
             {
                 GLP_Reset();
+                // 確実に表示するため
+                SendCustomEventDelayedSeconds(nameof(UIM_ShowYourHighScore), 5.0f);
             }
         }
 
 
         public override void OnPlayerRestored(VRCPlayerApi player)
         {
-            if (player == Networking.LocalPlayer)
-            {
-                
-            }
+            UIM_ShowYourHighScore();
         }
 
 
         public override void OnPlayerRespawn(VRCPlayerApi player)
         {
-            if (player != Networking.LocalPlayer) { return; }
-            if (!STM_IsSitting) { return; }
+            if (!player.isLocal) { return; }
+            if (!IsSitting) { return; }
 
-            STM_IsSitting = false;
+            IsSitting = false;
         }
 
 
         public override void OnOwnershipTransferred(VRCPlayerApi player)
         {
+            if (!player.isLocal) { return; }
             // オーナーがインスタンスから去った後、自分が新しいオーナーなら
-            if (player == Networking.LocalPlayer)
+            // プレイ中だったなら
+            if (CurrentGameState == GameState.Playing)
             {
-                // プレイ中だったなら
-                if (CurrentGameState == GameState.Playing)
-                {
-                    GLP_OnGameOver();
-                }
+                GLP_OnGameOver();
             }
         }
     }

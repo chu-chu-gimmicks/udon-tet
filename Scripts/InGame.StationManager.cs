@@ -8,21 +8,16 @@ namespace ChuChuGimmicks.UDONTET
 {
     public partial class InGame
     {
-        private bool STM_IsSitting { get; set; } = false;
-
-
-
-
         private void STM_Reset()
         {
-            STM_IsSitting = false;
+            IsSitting = false;
             station.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
         }
 
 
         public void STM_EnterChair()
         {
-            STM_IsSitting = true;
+            IsSitting = true;
             station.UseStation(Networking.LocalPlayer);
             _STM_AdjustHeightAutomatically();
         }
@@ -40,7 +35,7 @@ namespace ChuChuGimmicks.UDONTET
 
         private void STM_ExitChair()
         {
-            STM_IsSitting = false;
+            IsSitting = false;
             station.ExitStation(Networking.LocalPlayer);
             station.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
         }

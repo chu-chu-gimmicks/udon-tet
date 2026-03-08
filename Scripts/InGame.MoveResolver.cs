@@ -123,8 +123,6 @@ namespace ChuChuGimmicks.UDONTET
 
         private bool _MVR_TryMove(Vector2Int[] minoPos, _MoveDir dir)
         {
-            Debug.Log(dir);
-
             for (int i = 0; i < _MVR_minoBuffer.Length; i++)
             {
                 _MVR_minoBuffer[i] = minoPos[i] + new Vector2Int((int)dir, 0);
