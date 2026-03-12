@@ -53,8 +53,8 @@ namespace ChuChuGimmicks.UDONTET
 
         private bool _HLR_NeedsHold()
         {
-            ButtonState inputStateL = LGrabInputState;
-            ButtonState inputStateR = RGrabInputState;
+            ButtonState inputStateL = InputStateGrabL;
+            ButtonState inputStateR = InputStateGrabR;
             bool justPressed = (inputStateL != ButtonState.Released && _HLR_lastInputL == ButtonState.Released) || (inputStateR != ButtonState.Released && _HLR_lastInputR == ButtonState.Released);
             _HLR_lastInputL = inputStateL;
             _HLR_lastInputR = inputStateR;

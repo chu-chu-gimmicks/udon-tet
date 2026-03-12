@@ -25,7 +25,7 @@ namespace ChuChuGimmicks.UDONTET
     public partial class InGame
     {
         private const float _MVR_AUTOREPEAT_INTERVAL = 0.1f;
-        private const float _MVR_AUTOREPEAT_THRESHOLD = 0.2f;
+        private const float _MVR_AUTOREPEAT_THRESHOLD = 0.3f;
 
         private float _MVR_timer = 0.0f;
         private AxisState _MVR_lastInput = AxisState.Neutral;
@@ -66,7 +66,7 @@ namespace ChuChuGimmicks.UDONTET
 
             _MVR_timer += Time.deltaTime;
 
-            AxisState inputState = LHInputState;
+            AxisState inputState = InputStateLX;
             switch (inputState)
             {
                 case AxisState.Negative: dir = _MoveDir.Left;  break;

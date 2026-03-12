@@ -30,24 +30,24 @@ namespace ChuChuGimmicks.UDONTET
 
 
         [SerializeField] private GameObject logoImage;
-        [SerializeField] private TMPro.TextMeshProUGUI playerNameLabel;
+        [SerializeField] private TMPro.TextMeshProUGUI playerNameText;
         [SerializeField] private GameObject yourHighScoreUIParent;
-        [SerializeField] private TMPro.TextMeshProUGUI yourHighScoreLabel;
+        [SerializeField] private TMPro.TextMeshProUGUI yourHighScoreValueText;
         [Space(16)]
         [SerializeField] private GameObject statsUIParent;
-        [SerializeField] private TMPro.TextMeshProUGUI levelLabel, scoreLabel, scoreDeltaLabel;
-        [SerializeField] private TMPro.TextMeshProUGUI sLineLabel, sComboLabel, sTSpinLabel, sBTBLabel, sPerfectLabel;
+        [SerializeField] private TMPro.TextMeshProUGUI levelValueText, scoreValueText, scoreDeltaValueText;
+        [SerializeField] private TMPro.TextMeshProUGUI sLineValueText, sComboValueText, sTSpinValueText, sBTBValueText, sPerfectValueText;
         [Space(16)]
         [SerializeField] private GameObject pupupUIParent;
-        [SerializeField] private TMPro.TextMeshProUGUI pLineLabel, pComboLabel, pTSpinLabel, pBTBLabel, pPerfectLabel;
+        [SerializeField] private TMPro.TextMeshProUGUI pLineValueText, pComboValueText, pTSpinValueText, pBTBValueText, pPerfectValueText;
         [Space(16)]
         [SerializeField] private GameObject gameOverUIParent;
         [Space(16)]
         [SerializeField] private GameObject resetButton;
-        [SerializeField] private TMPro.TextMeshProUGUI resetButtonLabel;
+        [SerializeField] private TMPro.TextMeshProUGUI resetButtonText;
         [Space(16)]
-        [SerializeField] private Renderer guide;
-        [SerializeField] private Material[] guideMaterial;
+        [SerializeField] private UnityEngine.UI.Image guideImage;
+        [SerializeField] private Sprite[] guideSprite;
         [SerializeField] private GameObject titleMinos;
         [SerializeField] private GameObject fake;
         [Space(32)]

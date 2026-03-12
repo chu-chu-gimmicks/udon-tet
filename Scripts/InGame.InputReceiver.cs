@@ -24,32 +24,32 @@ namespace ChuChuGimmicks.UDONTET
     {
         private const float _INR_STICK_THRESHOLD = 0.75f;
 
-        private AxisState LHInputState { get; set; } = AxisState.Neutral;
-        private AxisState LVInputState { get; set; } = AxisState.Neutral;
-        private AxisState RHInputState { get; set; } = AxisState.Neutral;
-        private AxisState RVInputState { get; set; } = AxisState.Neutral;
+        private AxisState InputStateLX { get; set; } = AxisState.Neutral;
+        private AxisState InputStateLY { get; set; } = AxisState.Neutral;
+        private AxisState InputStateRX { get; set; } = AxisState.Neutral;
+        private AxisState InputStateRY { get; set; } = AxisState.Neutral;
 
-        //private ButtonState LUseInputState { get; set; }  = ButtonState.Released;
-        //private ButtonState RUseInputState { get; set; }  = ButtonState.Released;
-        private ButtonState LGrabInputState { get; set; } = ButtonState.Released;
-        private ButtonState RGrabInputState { get; set; } = ButtonState.Released;
-        private ButtonState JumpInputState { get; set; }  = ButtonState.Released;
+        private ButtonState InputStateUseL  { get; set; }  = ButtonState.Released;
+        private ButtonState InputStateUseR  { get; set; }  = ButtonState.Released;
+        private ButtonState InputStateGrabL { get; set; } = ButtonState.Released;
+        private ButtonState InputStateGrabR { get; set; } = ButtonState.Released;
+        private ButtonState InputStateJump  { get; set; }  = ButtonState.Released;
 
 
 
 
         private void INR_Reset()
         {
-            LHInputState = AxisState.Neutral;
-            LVInputState = AxisState.Neutral;
-            RHInputState = AxisState.Neutral;
-            RVInputState = AxisState.Neutral;
+            InputStateLX = AxisState.Neutral;
+            InputStateLY = AxisState.Neutral;
+            InputStateRX = AxisState.Neutral;
+            InputStateRY = AxisState.Neutral;
 
-            //LUseInputState  = ButtonState.Released;
-            //RUseInputState  = ButtonState.Released;
-            LGrabInputState = ButtonState.Released;
-            RGrabInputState = ButtonState.Released;
-            JumpInputState  = ButtonState.Released;
+            InputStateUseL  = ButtonState.Released;
+            InputStateUseR  = ButtonState.Released;
+            InputStateGrabL = ButtonState.Released;
+            InputStateGrabR = ButtonState.Released;
+            InputStateJump  = ButtonState.Released;
         }
 
 
@@ -63,68 +63,77 @@ namespace ChuChuGimmicks.UDONTET
         {
             if (!_INR_CanReceiveInput(isInVR: false)) { return; }
 
-
-            LHInputState = AxisState.Neutral;
-            LVInputState = AxisState.Neutral;
-            RHInputState = AxisState.Neutral;
-            RVInputState = AxisState.Neutral;
-
-            //LUseInputState = ButtonState.Released;
-            //RUseInputState = ButtonState.Released;
-            LGrabInputState = ButtonState.Released;
-            RGrabInputState = ButtonState.Released;
-            JumpInputState = ButtonState.Released;
+            bool negDown = false;
+            bool posDown = false;
+            bool negHeld = false;
+            bool posHeld = false;
 
             // 左コントローラーの水平入力に対応
-            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
-            {
-                LHInputState = AxisState.Negative;
-            }
-            else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
-            {
-                LHInputState = AxisState.Positive;
-            }
+            negDown = Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow);
+            posDown = Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow);
+            negHeld = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
+            posHeld = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
+            InputStateLX = _INR_GetAxisState(negDown, posDown, negHeld, posHeld, InputStateLX);
 
             // 左コントローラーの垂直入力に対応
-            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
-            {
-                LVInputState = AxisState.Positive;
-            }
-            else if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
-            {
-                LVInputState = AxisState.Negative;
-            }
+            negDown = Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow);
+            posDown = Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow);
+            negHeld = Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow);
+            posHeld = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow);
+            InputStateLY = _INR_GetAxisState(negDown, posDown, negHeld, posHeld, InputStateLY);
 
             // 右コントローラーの水平入力に対応
-            if (Input.GetKey(KeyCode.Q))
-            {
-                RHInputState = AxisState.Negative;
-            }
-            else if (Input.GetKey(KeyCode.E))
-            {
-                RHInputState = AxisState.Positive;
-            }
+            negDown = Input.GetKeyDown(KeyCode.Q);
+            posDown = Input.GetKeyDown(KeyCode.E);
+            negHeld = Input.GetKey(KeyCode.Q);
+            posHeld = Input.GetKey(KeyCode.E);
+            InputStateRX = _INR_GetAxisState(negDown, posDown, negHeld, posHeld, InputStateRX);
 
             // 右コントローラーの垂直入力に対応
             float wheelAxis = Input.GetAxis("Mouse ScrollWheel");
             if (Mathf.Abs(wheelAxis) >= Mathf.Epsilon)
             {
-                RVInputState = wheelAxis < 0
+                InputStateRY = wheelAxis < 0
                     ? AxisState.Negative
                     : AxisState.Positive;
+            }
+            else
+            {
+                InputStateRY = AxisState.Neutral;
+            }
+
+            // Use 入力に対応
+            if (Input.GetKey(KeyCode.L))
+            {
+                InputStateUseL = ButtonState.Pressed;
+                InputStateUseR = ButtonState.Pressed;
+            }
+            else
+            {
+                InputStateUseL = ButtonState.Released;
+                InputStateUseR = ButtonState.Released;
             }
 
             // Grab 入力に対応
             if (Input.GetKey(KeyCode.Space))
             {
-                LGrabInputState = ButtonState.Pressed;
-                RGrabInputState = ButtonState.Pressed;
+                InputStateGrabL = ButtonState.Pressed;
+                InputStateGrabR = ButtonState.Pressed;
+            }
+            else
+            {
+                InputStateGrabL = ButtonState.Released;
+                InputStateGrabR = ButtonState.Released;
             }
 
             // Jump 入力に対応
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
             {
-                JumpInputState = ButtonState.Pressed;
+                InputStateJump = ButtonState.Pressed;
+            }
+            else
+            {
+                InputStateJump = ButtonState.Released;
             }
 
             // デバッグ用
@@ -140,7 +149,7 @@ namespace ChuChuGimmicks.UDONTET
         {
             if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
-            LHInputState = _INR_GetAxisState(value);
+            InputStateLX = _INR_GetAxisState(value);
         }
 
 
@@ -149,7 +158,7 @@ namespace ChuChuGimmicks.UDONTET
         {
             if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
-            LVInputState = _INR_GetAxisState(value);
+            InputStateLY = _INR_GetAxisState(value);
         }
 
 
@@ -158,7 +167,7 @@ namespace ChuChuGimmicks.UDONTET
         {
             if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
-            RHInputState = _INR_GetAxisState(value);
+            InputStateRX = _INR_GetAxisState(value);
         }
 
 
@@ -167,25 +176,25 @@ namespace ChuChuGimmicks.UDONTET
         {
             if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
-            RVInputState = _INR_GetAxisState(value);
+            InputStateRY = _INR_GetAxisState(value);
         }
 
 
         // Use 入力
-        //public override void InputUse(bool value, VRC.Udon.Common.UdonInputEventArgs args)
-        //{
-        //    if (!_INR_CanReceiveInput(isInVR: true)) { return; }
+        public override void InputUse(bool value, VRC.Udon.Common.UdonInputEventArgs args)
+        {
+            if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
-        //    switch (args.handType)
-        //    {
-        //        case VRC.Udon.Common.HandType.LEFT:
-        //            LUseInputState = _INR_GetButtonState(value);
-        //            break;
-        //        case VRC.Udon.Common.HandType.RIGHT:
-        //            RUseInputState = _INR_GetButtonState(value);
-        //            break;
-        //    }
-        //}
+            switch (args.handType)
+            {
+                case VRC.Udon.Common.HandType.LEFT:
+                    InputStateUseL = _INR_GetButtonState(value);
+                    break;
+                case VRC.Udon.Common.HandType.RIGHT:
+                    InputStateUseR = _INR_GetButtonState(value);
+                    break;
+            }
+        }
 
 
         // Grab 入力
@@ -196,10 +205,10 @@ namespace ChuChuGimmicks.UDONTET
             switch (args.handType)
             {
                 case VRC.Udon.Common.HandType.LEFT:
-                    LGrabInputState = _INR_GetButtonState(value);
+                    InputStateGrabL = _INR_GetButtonState(value);
                     break;
                 case VRC.Udon.Common.HandType.RIGHT:
-                    RGrabInputState = _INR_GetButtonState(value);
+                    InputStateGrabR = _INR_GetButtonState(value);
                     break;
             }
         }
@@ -210,7 +219,35 @@ namespace ChuChuGimmicks.UDONTET
         {
             if (!_INR_CanReceiveInput(isInVR: true)) { return; }
 
-            JumpInputState = _INR_GetButtonState(value);
+            InputStateJump = _INR_GetButtonState(value);
+        }
+
+
+        private AxisState _INR_GetAxisState(bool negDown, bool posDown, bool negHeld, bool posHeld, AxisState currentState)
+        {
+            AxisState newState = currentState;
+            if (negDown)
+            {
+                newState = AxisState.Negative;
+            }
+            else if (posDown)
+            {
+                newState = AxisState.Positive;
+            }
+            // 継続して押されているかどうか
+            if (currentState == AxisState.Negative && !negHeld)
+            {
+                newState = posHeld
+                    ? AxisState.Positive
+                    : AxisState.Neutral;
+            }
+            else if (currentState == AxisState.Positive && !posHeld)
+            {
+                newState = negHeld
+                    ? AxisState.Negative
+                    : AxisState.Neutral;
+            }
+            return newState;
         }
 
 

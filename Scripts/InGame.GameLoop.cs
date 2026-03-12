@@ -68,6 +68,7 @@ namespace ChuChuGimmicks.UDONTET
             HDR_Reset();
             HLR_Reset();
             ADR_Reset();
+            GDR_Reset();
 
             UIR_Reset();
 

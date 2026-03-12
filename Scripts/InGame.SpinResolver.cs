@@ -97,7 +97,7 @@ namespace ChuChuGimmicks.UDONTET
         {
             isClockwise = false;
 
-            AxisState inputState = RHInputState;
+            AxisState inputState = InputStateRX;
 
             switch (inputState)
             {

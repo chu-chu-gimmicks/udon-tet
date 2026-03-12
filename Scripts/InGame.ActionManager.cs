@@ -16,7 +16,8 @@ namespace ChuChuGimmicks.UDONTET
         FirstHold   = 16,
         Hold        = 32,
         ChairAdjust = 64,
-        Pause       = 128
+        Pause       = 128,
+        Guide       = 256
     }
 
 
@@ -50,6 +51,7 @@ namespace ChuChuGimmicks.UDONTET
 
             if (ADR_ResolveAdjustment())  { actions |= (int)PlayerAction.ChairAdjust; }
             if (PAR_ResolvePause())       { actions |= (int)PlayerAction.Pause; }
+            if (GDR_ResolveGuide())       { actions |= (int)PlayerAction.Guide; }
 
             // 優先順位が大事
             if ((actions & (int)PlayerAction.Hold) != 0 || (actions & (int)PlayerAction.FirstHold) != 0)

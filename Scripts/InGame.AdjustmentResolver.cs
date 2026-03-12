@@ -22,6 +22,7 @@ namespace ChuChuGimmicks.UDONTET
         private bool ADR_ResolveAdjustment()
         {
             if (!ADR_NeedsAdjustment(out Vector3 dir)) { return false; }
+            if (!GST_IsInGame()) { return false; }
 
             float speed = Networking.LocalPlayer.IsUserInVR() ? _ADR_SPEED_VR * Time.deltaTime : _ADR_SPEED_DESKTOP;
             float newHeight = station.transform.localPosition.y + dir.y * speed;
@@ -39,7 +40,7 @@ namespace ChuChuGimmicks.UDONTET
 
         private bool ADR_NeedsAdjustment(out Vector3 dir)
         {
-            AxisState inputState = RVInputState;
+            AxisState inputState = InputStateRY;
             switch (inputState)
             {
                 case AxisState.Negative: dir = Vector3.down; break;

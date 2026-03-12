@@ -39,7 +39,7 @@ namespace ChuChuGimmicks.UDONTET
 
         private bool _HDR_NeedsHardDrop()
         {
-            AxisState inputState = LVInputState;
+            AxisState inputState = InputStateLY;
             bool isJustPressed = (inputState == AxisState.Positive && _HDR_lastInput != AxisState.Positive);
             _HDR_lastInput = inputState;
             return isJustPressed;

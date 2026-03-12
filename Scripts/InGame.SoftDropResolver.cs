@@ -6,7 +6,7 @@ using VRC.Udon;
 
 namespace ChuChuGimmicks.UDONTET
 {
-    public enum _SoftDropActive
+    public enum _SoftDropState
     {
         Inactive,
         Active
@@ -30,10 +30,10 @@ namespace ChuChuGimmicks.UDONTET
 
         private bool SDR_ResolveSoftDrop()
         {
-            if (!_SDR_HasChangedSoftDropState(out _SoftDropActive softDropState)) { return false; }
+            if (!_SDR_HasChangedSoftDropState(out _SoftDropState softDropState)) { return false; }
             if (!GST_IsInGame()) { return false; }
 
-            if (softDropState == _SoftDropActive.Inactive)
+            if (softDropState == _SoftDropState.Inactive)
             {
                 DRP_UpdateInterval();
             }
@@ -46,16 +46,16 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private bool _SDR_HasChangedSoftDropState(out _SoftDropActive softDropState)
+        private bool _SDR_HasChangedSoftDropState(out _SoftDropState softDropState)
         {
-            softDropState = _SoftDropActive.Inactive;
+            softDropState = _SoftDropState.Inactive;
 
-            AxisState inputState = LVInputState;
+            AxisState inputState = InputStateLY;
             if (inputState == AxisState.Negative)
             {
                 if (_SDR_lastInput != AxisState.Negative)
                 {
-                    softDropState = _SoftDropActive.Active;
+                    softDropState = _SoftDropState.Active;
                     _SDR_lastInput = AxisState.Negative;
                     return true;
                 }
@@ -64,7 +64,7 @@ namespace ChuChuGimmicks.UDONTET
             {
                 if (_SDR_lastInput != AxisState.Positive)
                 {
-                    softDropState = _SoftDropActive.Inactive;
+                    softDropState = _SoftDropState.Inactive;
                     _SDR_lastInput = AxisState.Positive;
                     return true;
                 }
