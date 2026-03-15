@@ -122,7 +122,10 @@ namespace ChuChuGimmicks.UDONTET
 
             CopyMino(currentMinoPos, _GLP_minoBuffer);
 
-            int actions = ACM_ResolvedActions();
+            int actions = ACM_ResolvedActions(currentMinoPos);
+            GRR_HideMino(_GLP_minoBuffer);
+            GRR_ShowMino(currentMinoPos, CurrentMinoType);
+            CopyMino(currentMinoPos, _GLP_minoBuffer);
 
             if ((actions & (int)PlayerAction.FirstHold) != 0)
             {

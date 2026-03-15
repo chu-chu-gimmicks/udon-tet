@@ -51,25 +51,20 @@ namespace ChuChuGimmicks.UDONTET
             softDropState = _SoftDropState.Inactive;
 
             AxisState inputState = InputStateLY;
-            if (inputState == AxisState.Negative)
-            {
-                if (_SDR_lastInput != AxisState.Negative)
-                {
-                    softDropState = _SoftDropState.Active;
-                    _SDR_lastInput = AxisState.Negative;
-                    return true;
-                }
-            }
-            else
-            {
-                if (_SDR_lastInput != AxisState.Positive)
-                {
-                    softDropState = _SoftDropState.Inactive;
-                    _SDR_lastInput = AxisState.Positive;
-                    return true;
-                }
-            }
+            bool isPressed = inputState == AxisState.Negative;
+            bool isHeld = _SDR_lastInput == AxisState.Negative;
+            _SDR_lastInput = inputState;
 
+            if (isPressed && !isHeld)
+            {
+                softDropState = _SoftDropState.Active;
+                return true;
+            }
+            else if (!isPressed && isHeld)
+            {
+                softDropState = _SoftDropState.Inactive;
+                return true;
+            }
             return false;
         }
     }

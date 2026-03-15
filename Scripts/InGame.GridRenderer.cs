@@ -93,11 +93,21 @@ namespace ChuChuGimmicks.UDONTET
             if (!_GRR_IsIndexSafe(idx)) { return; }
             if (!_GRR_IsMinoTypeSafe(minoType)) { return; }
 
-            gridRenderers[idx].enabled = true;
-            gridRenderers[idx].sharedMaterial = minoMaterials[(int)minoType];
+            if (!gridRenderers[idx].enabled)
+            {
+                gridRenderers[idx].enabled = true;
+            }
 
-            if (isGhost) { gridTransforms[idx].localScale = _GRR_ghostScale; }
-            else { gridTransforms[idx].localScale = _GRR_defaultScale; }
+            if (gridRenderers[idx].sharedMaterial != minoMaterials[(int)minoType])
+            {
+                gridRenderers[idx].sharedMaterial = minoMaterials[(int)minoType];
+            }
+
+            Vector3 targetScale = isGhost ? _GRR_ghostScale : _GRR_defaultScale;
+            if (gridTransforms[idx].localScale != targetScale)
+            {
+                gridTransforms[idx].localScale = targetScale;
+            }
         }
 
 
@@ -105,10 +115,16 @@ namespace ChuChuGimmicks.UDONTET
         {
             if (!_GRR_IsIndexSafe(idx)) { return; }
 
-            gridRenderers[idx].enabled = false;
-            gridTransforms[idx].localScale = _GRR_defaultScale;
-        }
+            if (gridRenderers[idx].enabled)
+            {
+                gridRenderers[idx].enabled = false;
+            }
 
+            if (gridTransforms[idx].localScale != _GRR_defaultScale)
+            {
+                gridTransforms[idx].localScale = _GRR_defaultScale;
+            }
+        }
 
         private bool _GRR_IsIndexSafe(byte idx)
         {

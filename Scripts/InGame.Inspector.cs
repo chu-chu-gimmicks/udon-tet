@@ -56,7 +56,6 @@ namespace ChuChuGimmicks.UDONTET
 
 
         [SerializeField] private VRCStation station;
-        [SerializeField] private Transform viewHeight;
         [SerializeField] private Transform stationLowerLimit;
         [SerializeField] private Transform stationUpperLimit;
     }

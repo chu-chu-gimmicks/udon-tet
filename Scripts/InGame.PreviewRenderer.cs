@@ -42,8 +42,15 @@ namespace ChuChuGimmicks.UDONTET
             if (!_PVR_IsIndexSafe(idx, holdMinoRenderers)) { return; }
             if (!_PVR_IsMinoTypeSafe(minoType)) { return; }
 
-            holdMinoRenderers[idx].enabled = true;
-            holdMinoRenderers[idx].sharedMaterial = minoMaterials[(int)minoType];
+            if (!holdMinoRenderers[idx].enabled)
+            {
+                holdMinoRenderers[idx].enabled = true;
+            }
+
+            if (holdMinoRenderers[idx].sharedMaterial != minoMaterials[(int)minoType])
+            {
+                holdMinoRenderers[idx].sharedMaterial = minoMaterials[(int)minoType];
+            }
         }
 
 
@@ -51,7 +58,10 @@ namespace ChuChuGimmicks.UDONTET
         {
             for (byte i = 0; i < holdMinoRenderers.Length; i++)
             {
-                holdMinoRenderers[i].enabled = false;
+                if (holdMinoRenderers[i].enabled)
+                {
+                    holdMinoRenderers[i].enabled = false;
+                }
             }
         }
 
@@ -77,8 +87,15 @@ namespace ChuChuGimmicks.UDONTET
             if (!_PVR_IsIndexSafe(idx, nextMinoRenderers)) { return; }
             if (!_PVR_IsMinoTypeSafe(minoType)) { return; }
 
-            nextMinoRenderers[idx].enabled = true;
-            nextMinoRenderers[idx].sharedMaterial = minoMaterials[(int)minoType];
+            if (!nextMinoRenderers[idx].enabled)
+            {
+                nextMinoRenderers[idx].enabled = true;
+            }
+
+            if (nextMinoRenderers[idx].sharedMaterial != minoMaterials[(int)minoType])
+            {
+                nextMinoRenderers[idx].sharedMaterial = minoMaterials[(int)minoType];
+            }
         }
 
 
@@ -86,7 +103,10 @@ namespace ChuChuGimmicks.UDONTET
         {
             for (byte i = 0; i < nextMinoRenderers.Length; i++)
             {
-                nextMinoRenderers[i].enabled = false;
+                if (nextMinoRenderers[i].enabled)
+                {
+                    nextMinoRenderers[i].enabled = false;
+                }
             }
         }
 

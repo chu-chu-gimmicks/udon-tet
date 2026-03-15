@@ -19,17 +19,6 @@ namespace ChuChuGimmicks.UDONTET
         {
             IsSitting = true;
             station.UseStation(Networking.LocalPlayer);
-            _STM_AdjustHeightAutomatically();
-        }
-
-
-        private void _STM_AdjustHeightAutomatically()
-        {
-            float currentViewHeight = VRC.SDK3.Rendering.VRCCameraSettings.ScreenCamera.Position.y;
-            float targetViewHeight = viewHeight.localPosition.y;
-
-            float diff = targetViewHeight - currentViewHeight;
-            station.transform.localPosition += new Vector3(0, diff, 0);
         }
 
 
@@ -37,7 +26,6 @@ namespace ChuChuGimmicks.UDONTET
         {
             IsSitting = false;
             station.ExitStation(Networking.LocalPlayer);
-            station.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
         }
 
 

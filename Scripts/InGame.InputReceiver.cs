@@ -29,7 +29,7 @@ namespace ChuChuGimmicks.UDONTET
         private AxisState InputStateRX { get; set; } = AxisState.Neutral;
         private AxisState InputStateRY { get; set; } = AxisState.Neutral;
 
-        private ButtonState InputStateUseL  { get; set; }  = ButtonState.Released;
+        // private ButtonState InputStateUseL  { get; set; }  = ButtonState.Released;
         private ButtonState InputStateUseR  { get; set; }  = ButtonState.Released;
         private ButtonState InputStateGrabL { get; set; } = ButtonState.Released;
         private ButtonState InputStateGrabR { get; set; } = ButtonState.Released;
@@ -45,7 +45,7 @@ namespace ChuChuGimmicks.UDONTET
             InputStateRX = AxisState.Neutral;
             InputStateRY = AxisState.Neutral;
 
-            InputStateUseL  = ButtonState.Released;
+            // InputStateUseL  = ButtonState.Released;
             InputStateUseR  = ButtonState.Released;
             InputStateGrabL = ButtonState.Released;
             InputStateGrabR = ButtonState.Released;
@@ -103,14 +103,12 @@ namespace ChuChuGimmicks.UDONTET
             }
 
             // Use 入力に対応
-            if (Input.GetKey(KeyCode.L))
+            if (Input.GetMouseButton(1))
             {
-                InputStateUseL = ButtonState.Pressed;
                 InputStateUseR = ButtonState.Pressed;
             }
             else
             {
-                InputStateUseL = ButtonState.Released;
                 InputStateUseR = ButtonState.Released;
             }
 
@@ -188,7 +186,7 @@ namespace ChuChuGimmicks.UDONTET
             switch (args.handType)
             {
                 case VRC.Udon.Common.HandType.LEFT:
-                    InputStateUseL = _INR_GetButtonState(value);
+                    // InputStateUseL = _INR_GetButtonState(value);
                     break;
                 case VRC.Udon.Common.HandType.RIGHT:
                     InputStateUseR = _INR_GetButtonState(value);
@@ -226,6 +224,7 @@ namespace ChuChuGimmicks.UDONTET
         private AxisState _INR_GetAxisState(bool negDown, bool posDown, bool negHeld, bool posHeld, AxisState currentState)
         {
             AxisState newState = currentState;
+            // 新たに押されたかどうか
             if (negDown)
             {
                 newState = AxisState.Negative;

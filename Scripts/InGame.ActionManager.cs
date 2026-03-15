@@ -28,16 +28,16 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private int ACM_ResolvedActions()
+        private int ACM_ResolvedActions(Vector2Int[] minoPos)
         {
             int actions = (int)PlayerAction.None;
 
-            if (MVR_ResolveMove(currentMinoPos)) { actions |= (int)PlayerAction.Move; }
-            if (SPR_ResolveSpin(currentMinoPos)) { actions |= (int)PlayerAction.Spin; }
+            if (MVR_ResolveMove(minoPos)) { actions |= (int)PlayerAction.Move; }
+            if (SPR_ResolveSpin(minoPos)) { actions |= (int)PlayerAction.Spin; }
             if (SDR_ResolveSoftDrop()) { actions |= (int)PlayerAction.SoftDrop; }
-            if (HDR_ResolveHardDrop(currentMinoPos)) { actions |= (int)PlayerAction.HardDrop; }
+            if (HDR_ResolveHardDrop(minoPos)) { actions |= (int)PlayerAction.HardDrop; }
 
-            if (HLR_ResolveHold(currentMinoPos, out bool isFirstHold))
+            if (HLR_ResolveHold(minoPos, out bool isFirstHold))
             {
                 if (isFirstHold)
                 {
@@ -66,18 +66,14 @@ namespace ChuChuGimmicks.UDONTET
                 if ((actions & (int)PlayerAction.Move) != 0)
                 {
                     DRS_TSpin = TSpinState.None;
-                    LDC_UpdateByInput(currentMinoPos);
+                    LDC_UpdateByInput(minoPos);
                 }
 
                 if ((actions & (int)PlayerAction.Spin) != 0)
                 {
-                    LDC_UpdateByInput(currentMinoPos);
+                    LDC_UpdateByInput(minoPos);
                 }
             }
-
-            GRR_HideMino(_GLP_minoBuffer);
-            GRR_ShowMino(currentMinoPos, CurrentMinoType);
-            CopyMino(currentMinoPos, _GLP_minoBuffer);
 
             return actions;
         }

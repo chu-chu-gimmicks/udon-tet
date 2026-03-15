@@ -1,3 +1,4 @@
+
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -15,7 +16,7 @@ namespace ChuChuGimmicks.UDONTET
     public partial class InGame
     {
         private ButtonState _GDR_lastInputL = ButtonState.Released;
-        private ButtonState _GDR_lastInputR = ButtonState.Released;
+        private ButtonState _GDR_lastInput = ButtonState.Released;
 
 
 
@@ -23,7 +24,7 @@ namespace ChuChuGimmicks.UDONTET
         private void GDR_Reset()
         {
             _GDR_lastInputL = ButtonState.Released;
-            _GDR_lastInputR = ButtonState.Released;
+            _GDR_lastInput = ButtonState.Released;
         }
 
 
@@ -49,19 +50,17 @@ namespace ChuChuGimmicks.UDONTET
         {
             guideState = _GuideState.Inactive;
 
-            ButtonState inputStateL = InputStateUseL;
-            ButtonState inputStateR = InputStateUseR;
-            bool isPressedL = inputStateL == ButtonState.Pressed;
-            bool isPressedR = inputStateR == ButtonState.Pressed;
-            bool isHeldL = inputStateL == ButtonState.Released;
-            bool isHeldR = inputStateR == ButtonState.Released;
+            ButtonState inputState = InputStateUseR;
+            bool isPressed = inputState == ButtonState.Pressed;
+            bool isHeld = _GDR_lastInput == ButtonState.Pressed;
+            _GDR_lastInput = inputState;
 
-            if ((isPressedL || isPressedR) && (!isHeldL && !isHeldR))
+            if (isPressed && !isHeld)
             {
                 guideState = _GuideState.Active;
                 return true;
             }
-            else if ((!isPressedL && !isPressedR) && (isHeldL || isHeldR))
+            else if (!isPressed && isHeld)
             {
                 guideState = _GuideState.Inactive;
                 return true;
