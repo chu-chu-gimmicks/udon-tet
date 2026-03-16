@@ -24,7 +24,6 @@ namespace ChuChuGimmicks.UDONTET
         private bool HDR_ResolveHardDrop(Vector2Int[] minoPos)
         {
             if (!_HDR_NeedsHardDrop()) { return false; }
-            if (!GST_CanReflectInput()) { return false; }
 
             CopyMino(minoPos, _HDR_minoBuffer);
             while (GRD_CanMoveDown(_HDR_minoBuffer))

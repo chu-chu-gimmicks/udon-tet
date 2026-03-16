@@ -109,24 +109,31 @@ namespace ChuChuGimmicks.UDONTET
 
         public void GLP_LateUpdate()
         {
-            if (!Networking.IsOwner(this.gameObject)) { return; }
-            if (CurrentGameState != GameState.Playing) { return; }
-            if (CurrentClearAnimState != ClearAnimationState.Idle)
+            if (!IsPlayingGame()) { return; }
+
+            // アニメーション中は一部操作のみを受け付ける
+            if (GST_IsAnimationgClear())
             {
+                ACM_ResolveActionsWhileAnimating();
+
+                // アニメーションが終わっていたらミノを生成し、次のフレームから通常処理に戻す
                 if (CurrentClearAnimState == ClearAnimationState.Completed)
                 {
+                    CurrentClearAnimState = ClearAnimationState.Idle;
                     _GLP_SpawnAfterAnimation();
                 }
+
                 return;
             }
 
+            // プレイヤーの操作を処理
             CopyMino(currentMinoPos, _GLP_minoBuffer);
-
             int actions = ACM_ResolvedActions(currentMinoPos);
             GRR_HideMino(_GLP_minoBuffer);
             GRR_ShowMino(currentMinoPos, CurrentMinoType);
             CopyMino(currentMinoPos, _GLP_minoBuffer);
 
+            // その後の処理（落下、固定、アニメーション開始、生成）
             if ((actions & (int)PlayerAction.FirstHold) != 0)
             {
                 _GLP_SpawnMino();
@@ -190,7 +197,7 @@ namespace ChuChuGimmicks.UDONTET
             }
             else
             {
-                if (GRD_IsGameOver(currentMinoPos))
+                if (GRD_IsGameOver())
                 {
                     GLP_OnGameOver();
                     return;
@@ -247,9 +254,7 @@ namespace ChuChuGimmicks.UDONTET
 
         private void _GLP_SpawnAfterAnimation()
         {
-            CurrentClearAnimState = ClearAnimationState.Idle;
-
-            if (GRD_IsGameOver(currentMinoPos))
+            if (GRD_IsGameOver())
             {
                 GLP_OnGameOver();
                 return;

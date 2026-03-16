@@ -77,7 +77,6 @@ namespace ChuChuGimmicks.UDONTET
         private bool SPR_ResolveSpin(Vector2Int[] minoPos)
         {
             if (!_SPR_NeedsSpin(out bool isClockwise)) { return false; }
-            if (!GST_CanReflectInput()) { return false; }
             if (CurrentMinoType == MinoType.O) { return false; }
 
             CopyMino(minoPos, _SPR_minoBuffer);

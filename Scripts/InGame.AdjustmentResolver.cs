@@ -22,7 +22,6 @@ namespace ChuChuGimmicks.UDONTET
         private bool ADR_ResolveAdjustment()
         {
             if (!ADR_NeedsAdjustment(out Vector3 dir)) { return false; }
-            if (!GST_IsInGame()) { return false; }
 
             float speed = Networking.LocalPlayer.IsUserInVR() ? _ADR_SPEED_VR * Time.deltaTime : _ADR_SPEED_DESKTOP;
             float newHeight = station.transform.localPosition.y + dir.y * speed;

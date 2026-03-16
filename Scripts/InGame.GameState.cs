@@ -89,9 +89,9 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private bool GST_IsInGame()
+        private bool IsPlayingGame()
         {
-            if (CurrentGameState == GameState.Playing && Networking.IsOwner(this.gameObject))
+            if (CurrentGameState == GameState.Playing)
             {
                 return true;
             }
@@ -99,13 +99,13 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private bool GST_CanReflectInput()
+        private bool GST_IsAnimationgClear()
         {
-            if (CurrentGameState == GameState.Playing && CurrentClearAnimState == ClearAnimationState.Idle && Networking.IsOwner(this.gameObject))
+            if (CurrentClearAnimState == ClearAnimationState.Idle)
             {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
     }
 }

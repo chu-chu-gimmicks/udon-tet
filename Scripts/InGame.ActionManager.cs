@@ -32,9 +32,9 @@ namespace ChuChuGimmicks.UDONTET
         {
             int actions = (int)PlayerAction.None;
 
-            if (MVR_ResolveMove(minoPos)) { actions |= (int)PlayerAction.Move; }
-            if (SPR_ResolveSpin(minoPos)) { actions |= (int)PlayerAction.Spin; }
-            if (SDR_ResolveSoftDrop()) { actions |= (int)PlayerAction.SoftDrop; }
+            if (MVR_ResolveMove(minoPos))     { actions |= (int)PlayerAction.Move; }
+            if (SPR_ResolveSpin(minoPos))     { actions |= (int)PlayerAction.Spin; }
+            if (SDR_ResolveSoftDrop())        { actions |= (int)PlayerAction.SoftDrop; }
             if (HDR_ResolveHardDrop(minoPos)) { actions |= (int)PlayerAction.HardDrop; }
 
             if (HLR_ResolveHold(minoPos, out bool isFirstHold))
@@ -76,6 +76,15 @@ namespace ChuChuGimmicks.UDONTET
             }
 
             return actions;
+        }
+
+
+        private void ACM_ResolveActionsWhileAnimating()
+        {
+            SDR_ResolveSoftDrop();
+            ADR_ResolveAdjustment();
+            PAR_ResolvePause();
+            GDR_ResolveGuide();
         }
     }
 }

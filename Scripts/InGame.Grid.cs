@@ -87,25 +87,16 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private bool GRD_IsGameOver(Vector2Int[] minoPos)
+        private bool GRD_IsGameOver()
         {
-            for (int i = 0; i < minoPos.Length; i++)
+            int startIdx = WIDTH * DEADLINE;
+            for (int i = startIdx; i < grid.Length; i++)
             {
-                if (_GRD_IsAboveOfYBounds(minoPos[i]))
+                if (grid[i] != MinoType.None)
                 {
+                    Debug.Log($"GAME OVER {i}");
                     return true;
                 }
-            }
-            return false;
-        }
-
-
-        private bool _GRD_IsAboveOfYBounds(Vector2Int pos)
-        {
-            if (pos.y >= DEADLINE)
-            {
-                Debug.Log("ABOVE OF Y BOUNDS");
-                return true;
             }
             return false;
         }

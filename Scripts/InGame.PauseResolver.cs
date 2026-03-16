@@ -22,7 +22,6 @@ namespace ChuChuGimmicks.UDONTET
         private bool PAR_ResolvePause()
         {
             if (!PAR_NeedsPause()) { return false; }
-            if (!GST_IsInGame()) { return false; }
 
             STM_ExitChair();
             UIM_Pause();

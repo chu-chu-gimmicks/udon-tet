@@ -86,8 +86,9 @@ namespace ChuChuGimmicks.UDONTET
 
         public override void OnOwnershipTransferred(VRCPlayerApi player)
         {
+            // 自分が新しいオーナーでないなら何もしない
             if (!player.isLocal) { return; }
-            // オーナーがインスタンスから去った後、自分が新しいオーナーなら
+
             // プレイ中だったなら
             if (CurrentGameState == GameState.Playing)
             {

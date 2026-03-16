@@ -31,7 +31,6 @@ namespace ChuChuGimmicks.UDONTET
         private bool GDR_ResolveGuide()
         {
             if (!_GDR_HasChangedGuideState(out _GuideState guideState)) { return false; }
-            if (!GST_IsInGame()) { return false; }
 
             if (guideState == _GuideState.Active)
             {

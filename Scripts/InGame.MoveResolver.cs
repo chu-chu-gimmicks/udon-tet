@@ -47,7 +47,6 @@ namespace ChuChuGimmicks.UDONTET
         private bool MVR_ResolveMove(Vector2Int[] minoPos)
         {
             if (!_MVR_NeedsMove(out _MoveDir dir)) { return false; }
-            if (!GST_CanReflectInput()) { return false; }
 
             CopyMino(minoPos, _MVR_minoBuffer);
             bool success = _MVR_TryMove(_MVR_minoBuffer, dir);

@@ -32,7 +32,6 @@ namespace ChuChuGimmicks.UDONTET
 
             if (!CanHold) { return false; }
             if (!_HLR_NeedsHold()) { return false; }
-            if (!GST_CanReflectInput()) { return false; }
 
             CopyMino(minoPos, _HLR_minoBuffer);
 
