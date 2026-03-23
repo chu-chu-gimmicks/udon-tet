@@ -39,8 +39,8 @@ namespace ChuChuGimmicks.UDONTET
 
         private bool ADR_NeedsAdjustment(out Vector3 dir)
         {
-            AxisState inputState = InputStateRY;
-            switch (inputState)
+            AxisState input = InputStateRY;
+            switch (input)
             {
                 case AxisState.Negative: dir = Vector3.down; break;
                 case AxisState.Positive: dir = Vector3.up;   break;

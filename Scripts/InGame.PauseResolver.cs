@@ -31,9 +31,9 @@ namespace ChuChuGimmicks.UDONTET
 
         private bool PAR_NeedsPause()
         {
-            ButtonState inputState = InputStateJump;
-            bool justPressed = inputState == ButtonState.Pressed && _PAR_lastInput == ButtonState.Released;
-            _PAR_lastInput = inputState;
+            ButtonState input = InputStateJump;
+            bool justPressed = input == ButtonState.Pressed && _PAR_lastInput == ButtonState.Released;
+            _PAR_lastInput = input;
             return justPressed;
         }
     }

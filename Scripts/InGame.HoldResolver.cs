@@ -52,11 +52,11 @@ namespace ChuChuGimmicks.UDONTET
 
         private bool _HLR_NeedsHold()
         {
-            ButtonState inputStateL = InputStateGrabL;
-            ButtonState inputStateR = InputStateGrabR;
-            bool justPressed = (inputStateL != ButtonState.Released && _HLR_lastInputL == ButtonState.Released) || (inputStateR != ButtonState.Released && _HLR_lastInputR == ButtonState.Released);
-            _HLR_lastInputL = inputStateL;
-            _HLR_lastInputR = inputStateR;
+            ButtonState inputL = InputStateGrabL;
+            ButtonState inputR = InputStateGrabR;
+            bool justPressed = (inputL != ButtonState.Released && _HLR_lastInputL == ButtonState.Released) || (inputR != ButtonState.Released && _HLR_lastInputR == ButtonState.Released);
+            _HLR_lastInputL = inputL;
+            _HLR_lastInputR = inputR;
             return justPressed;
         }
     }

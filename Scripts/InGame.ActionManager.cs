@@ -54,10 +54,8 @@ namespace ChuChuGimmicks.UDONTET
             if (GDR_ResolveGuide())       { actions |= (int)PlayerAction.Guide; }
 
             // 優先順位が大事
-            if ((actions & (int)PlayerAction.Hold) != 0 || (actions & (int)PlayerAction.FirstHold) != 0)
+            if ((actions & (int)PlayerAction.FirstHold) != 0 || (actions & (int)PlayerAction.Hold) != 0)
             {
-                GRR_HideMino(_GLP_minoBuffer);
-                PVR_ShowHoldMino(HLR_HoldMinoType);
                 return actions;
             }
 
@@ -79,12 +77,14 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private void ACM_ResolveActionsWhileAnimating()
+        private int ACM_ResolveActionsWhileAnimating()
         {
-            SDR_ResolveSoftDrop();
-            ADR_ResolveAdjustment();
-            PAR_ResolvePause();
-            GDR_ResolveGuide();
+            int actions = (int)PlayerAction.None;
+            if (SDR_ResolveSoftDrop())   { actions |= (int)PlayerAction.SoftDrop; }
+            if (ADR_ResolveAdjustment()) { actions |= (int)PlayerAction.ChairAdjust; }
+            if (PAR_ResolvePause())      { actions |= (int)PlayerAction.Pause; }
+            if (GDR_ResolveGuide())      { actions |= (int)PlayerAction.Guide; }
+            return actions;
         }
     }
 }

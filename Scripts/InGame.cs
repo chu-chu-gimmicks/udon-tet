@@ -58,8 +58,6 @@ namespace ChuChuGimmicks.UDONTET
         {
             ReflectOnlyInCollider = adapter.reflectOnlyInCollider;
 
-            UIM_HideFake();
-
             if (CurrentGameState == GameState.Title)
             {
                 GLP_Reset();

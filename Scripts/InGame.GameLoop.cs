@@ -136,10 +136,14 @@ namespace ChuChuGimmicks.UDONTET
             // その後の処理（落下、固定、アニメーション開始、生成）
             if ((actions & (int)PlayerAction.FirstHold) != 0)
             {
+                GRR_HideMino(currentMinoPos);
+                PVR_ShowHoldMino(HLR_HoldMinoType);
                 _GLP_SpawnMino();
             }
             else if ((actions & (int)PlayerAction.Hold) != 0)
             {
+                GRR_HideMino(currentMinoPos);
+                PVR_ShowHoldMino(HLR_HoldMinoType);
                 _GLP_SpawnBySubsequentHold();
             }
             else if ((actions & (int)PlayerAction.HardDrop) != 0)

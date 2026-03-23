@@ -256,11 +256,5 @@ namespace ChuChuGimmicks.UDONTET
         {
             guideImage.enabled = false;
         }
-
-
-        private void UIM_HideFake()
-        {
-            fake.SetActive(false);
-        }
     }
 }

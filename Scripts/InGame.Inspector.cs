@@ -49,7 +49,6 @@ namespace ChuChuGimmicks.UDONTET
         [SerializeField] private UnityEngine.UI.Image guideImage;
         [SerializeField] private Sprite[] guideSprite;
         [SerializeField] private GameObject titleMinos;
-        [SerializeField] private GameObject fake;
         [Space(32)]
 
 

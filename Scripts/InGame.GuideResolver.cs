@@ -15,6 +15,8 @@ namespace ChuChuGimmicks.UDONTET
 
     public partial class InGame
     {
+        private _GuideState guideState = _GuideState.Inactive;
+
         private ButtonState _GDR_lastInputL = ButtonState.Released;
         private ButtonState _GDR_lastInput = ButtonState.Released;
 
@@ -23,6 +25,8 @@ namespace ChuChuGimmicks.UDONTET
 
         private void GDR_Reset()
         {
+            guideState = _GuideState.Inactive;
+
             _GDR_lastInputL = ButtonState.Released;
             _GDR_lastInput = ButtonState.Released;
         }
@@ -30,7 +34,7 @@ namespace ChuChuGimmicks.UDONTET
 
         private bool GDR_ResolveGuide()
         {
-            if (!_GDR_HasChangedGuideState(out _GuideState guideState)) { return false; }
+            if (!_GDR_HasChangedGuideState()) { return false; }
 
             if (guideState == _GuideState.Active)
             {
@@ -45,26 +49,16 @@ namespace ChuChuGimmicks.UDONTET
         }
 
 
-        private bool _GDR_HasChangedGuideState(out _GuideState guideState)
+        private bool _GDR_HasChangedGuideState()
         {
-            guideState = _GuideState.Inactive;
+            ButtonState input = InputStateUseR;
+            bool justPressed = (input == ButtonState.Pressed && _GDR_lastInput != ButtonState.Pressed);
+            _GDR_lastInput = input;
+            if (!justPressed) { return false; }
 
-            ButtonState inputState = InputStateUseR;
-            bool isPressed = inputState == ButtonState.Pressed;
-            bool isHeld = _GDR_lastInput == ButtonState.Pressed;
-            _GDR_lastInput = inputState;
-
-            if (isPressed && !isHeld)
-            {
-                guideState = _GuideState.Active;
-                return true;
-            }
-            else if (!isPressed && isHeld)
-            {
-                guideState = _GuideState.Inactive;
-                return true;
-            }
-            return false;
+            bool isGuideActive = (guideState == _GuideState.Active);
+            guideState = isGuideActive ? _GuideState.Inactive : _GuideState.Active;
+            return true;
         }
     }
 }

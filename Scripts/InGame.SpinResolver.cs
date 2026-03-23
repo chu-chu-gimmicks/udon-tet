@@ -96,18 +96,18 @@ namespace ChuChuGimmicks.UDONTET
         {
             isClockwise = false;
 
-            AxisState inputState = InputStateRX;
+            AxisState input = InputStateRX;
 
-            switch (inputState)
+            switch (input)
             {
                 case AxisState.Negative: isClockwise = false; break;
                 case AxisState.Positive: isClockwise = true;  break;
             }
 
-            bool isChanged = (_SPR_lastInput != inputState);
-            _SPR_lastInput = inputState;
+            bool isChanged = (_SPR_lastInput != input);
+            _SPR_lastInput = input;
 
-            return isChanged && (inputState != AxisState.Neutral);
+            return isChanged && (input != AxisState.Neutral);
         }
 
 

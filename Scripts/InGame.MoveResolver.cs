@@ -65,8 +65,8 @@ namespace ChuChuGimmicks.UDONTET
 
             _MVR_timer += Time.deltaTime;
 
-            AxisState inputState = InputStateLX;
-            switch (inputState)
+            AxisState input = InputStateLX;
+            switch (input)
             {
                 case AxisState.Negative: dir = _MoveDir.Left;  break;
                 case AxisState.Positive: dir = _MoveDir.Right; break;
@@ -74,19 +74,19 @@ namespace ChuChuGimmicks.UDONTET
 
             bool wantsToMove = false;
 
-            if (inputState == AxisState.Neutral)
+            if (input == AxisState.Neutral)
             {
                 _MVR_timer = 0.0f;
-                _MVR_lastInput = inputState;
+                _MVR_lastInput = input;
                 _MVR_ARState = _AutoRepeat.Idle;
                 return false;
             }
 
-            if (_MVR_lastInput != inputState)
+            if (_MVR_lastInput != input)
             {
                 _MVR_ARState = _AutoRepeat.Idle;
             }
-            _MVR_lastInput = inputState;
+            _MVR_lastInput = input;
 
             // U# では Enum の Switch 文は使えないぽい！
             if (_MVR_ARState == _AutoRepeat.Idle)

@@ -49,10 +49,10 @@ namespace ChuChuGimmicks.UDONTET
         {
             softDropState = _SoftDropState.Inactive;
 
-            AxisState inputState = InputStateLY;
-            bool isPressed = inputState == AxisState.Negative;
+            AxisState input = InputStateLY;
+            bool isPressed = input == AxisState.Negative;
             bool isHeld = _SDR_lastInput == AxisState.Negative;
-            _SDR_lastInput = inputState;
+            _SDR_lastInput = input;
 
             if (isPressed && !isHeld)
             {

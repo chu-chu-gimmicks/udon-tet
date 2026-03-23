@@ -32,7 +32,6 @@ namespace ChuChuGimmicks.UDONTET
 
             DRP_Timer += Time.deltaTime;
 
-            // 通常の落下
             if (DRP_Timer >= DRP_Interval && GRD_CanMoveDown(minoPos))
             {
                 hasDropped = true;
