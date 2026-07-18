@@ -32,9 +32,9 @@ namespace ChuChuGimmicks.UDONTET
 
         private void AdjustHeightAutomatically()
         {
-            float currentViewHeight = VRC.SDK3.Rendering.VRCCameraSettings.ScreenCamera.Position.y;
+            float currViewHeight = VRC.SDK3.Rendering.VRCCameraSettings.ScreenCamera.Position.y;
             float targetViewHeight = viewHeight.position.y;
-            float diff = targetViewHeight - currentViewHeight;
+            float diff = targetViewHeight - currViewHeight;
             this.gameObject.transform.position += new Vector3(0, diff, 0);
         }
     }

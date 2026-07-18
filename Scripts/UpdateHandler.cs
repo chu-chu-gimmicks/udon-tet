@@ -9,7 +9,7 @@ namespace ChuChuGimmicks.UDONTET
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public class UpdateHandler : UdonSharpBehaviour
     {
-        [SerializeField] private InGame gameManager;
+        [SerializeField] private Main gameManager;
 
 
 
@@ -17,12 +17,6 @@ namespace ChuChuGimmicks.UDONTET
         private void Update()
         {
             gameManager.GLP_Update();
-        }
-
-
-        private void LateUpdate()
-        {
-            gameManager.GLP_LateUpdate();
         }
     }
 }

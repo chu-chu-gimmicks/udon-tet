@@ -7,38 +7,60 @@ using VRC.Udon;
 namespace ChuChuGimmicks.UDONTET
 {
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-
     public class UserDataAccessor : UdonSharpBehaviour
     {
         [SerializeField] private ChuChuGimmicks.UDONTET.UserData referenceUserData;
 
         private ChuChuGimmicks.UDONTET.UserData userData;
+        private bool isDataRestored = false;
+        private bool isDataFound = false;
 
 
 
 
-        public int GetYourHighScore()
+        public override void OnPlayerRestored(VRCPlayerApi player)
         {
-            if (!EnsureAccessToUserData()) { return 0; }
-            return userData.YourHighScore;
+            if (!player.isLocal) { return; }
+
+            EnsureDataFound(true);
         }
 
 
-        public void SetYourHighScore(int value)
+        public bool EnsureDataFound(bool isRestoreVerified = false)
         {
-            if (!EnsureAccessToUserData()) { return; }
-            userData.YourHighScore = value;
-        }
-
-
-        private bool EnsureAccessToUserData()
-        {
-            if (Utilities.IsValid(userData)) { return true; }
-
-            userData = (ChuChuGimmicks.UDONTET.UserData)Networking.FindComponentInPlayerObjects(Networking.LocalPlayer, referenceUserData);
-
-            if (Utilities.IsValid(userData))
+            isDataRestored = isDataRestored || isRestoreVerified;
+            if (isDataRestored && !isDataFound)
             {
+                isDataFound = TryFindUserData();
+            }
+            return isDataFound;
+        }
+
+
+        private bool TryFindUserData()
+        {
+            userData = (ChuChuGimmicks.UDONTET.UserData)Networking.FindComponentInPlayerObjects(Networking.LocalPlayer, referenceUserData);
+            return Utilities.IsValid(userData);
+        }
+
+
+        public bool TryGetYourHighScore(out int value)
+        {
+            if (isDataFound)
+            {
+                value = userData.YourHighScore;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+
+
+        public bool TrySetYourHighScore(int value)
+        {
+            if (isDataFound)
+            {
+                userData.YourHighScore = value;
                 return true;
             }
             return false;

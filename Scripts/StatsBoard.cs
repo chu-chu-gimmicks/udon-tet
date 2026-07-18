@@ -9,33 +9,36 @@ namespace ChuChuGimmicks.UDONTET
     [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
     public class StatsBoard : UdonSharpBehaviour
     {
-        //[SerializeField] private TextMeshProUGUI debugLabel;
-        //private int debugCount = 0;
-        // public void Chu_Debug(string text)
-        // {
-        //     if (Utilities.IsValid(debugLabel)) { return; }
+        #region Debug
+        [SerializeField] private TMPro.TextMeshProUGUI debugText;
+        private int debugCount = 0;
+        public void Chu_Debug(string text)
+        {
+            if (!Utilities.IsValid(debugText)) { return; }
 
-        //     debugCount++;
-        //     debugLabel.text = $"{debugCount}: {text}";
-        // }
-
-
-        //public override void OnPostSerialization(SerializationResult result)
-        //{
-        //    Chu_Debug($"{result.byteCount}B Synced");
-        //}
+            debugText.text = $"{debugCount}: {text}";
+            debugCount++;
+            if (debugCount == int.MaxValue) { debugCount = 0; }
+        }
 
 
+        public override void OnPostSerialization(VRC.Udon.Common.SerializationResult result)
+        {
+            Chu_Debug($"{result.success}, {result.byteCount} bytes");
+        }
+        #endregion
 
 
-        [Header("Max 16")]
-        [SerializeField] private Adapter[] adapters;
 
-        [Space(64)]
-        [Header("---- Don't Touch ----")]
-        [SerializeField] private TMPro.TextMeshProUGUI[] nameLabels;
-        [SerializeField] private TMPro.TextMeshProUGUI[] scoreLabels;
-        [SerializeField] private TMPro.TextMeshProUGUI[] recordLabels;
+
+        [SerializeField] private UDONTETAuthoring[] authorings;
+        [SerializeField] private UserDataAccessor userDataAccessor;
+
+        [SerializeField] private TMPro.TextMeshProUGUI yScoreText;
+        [SerializeField] private TMPro.TextMeshProUGUI[] lNameTexts;
+        [SerializeField] private TMPro.TextMeshProUGUI[] lScoreTexts;
+        [SerializeField] private TMPro.TextMeshProUGUI[] rValueTexts;
+        [SerializeField] private TMPro.TextMeshProUGUI[] rNameTexts;
 
         private const float INTERVAL = 2.0f;
         private const string INITIAL_NAME = "--------";
@@ -43,29 +46,69 @@ namespace ChuChuGimmicks.UDONTET
         private bool isPending = false;
 
         [UdonSynced] private short[] playIds = new short[16];
-        [UdonSynced] private string[] playerNames = new string[8] { INITIAL_NAME, INITIAL_NAME, INITIAL_NAME, INITIAL_NAME, INITIAL_NAME, INITIAL_NAME, INITIAL_NAME, INITIAL_NAME };
-        [UdonSynced] private int[] scores = new int[8];
 
-        [UdonSynced] private ushort mostLines = 0;
-        [UdonSynced] private byte mostCombo = 0;
-        [UdonSynced] private ushort mostTSpins = 0;
-        [UdonSynced] private byte mostBTB = 0;
-        [UdonSynced] private ushort mostPerfects = 0;
+        [UdonSynced] private string[] lNames = new string[8] { INITIAL_NAME, INITIAL_NAME, INITIAL_NAME, INITIAL_NAME, INITIAL_NAME, INITIAL_NAME, INITIAL_NAME, INITIAL_NAME };
+        [UdonSynced] private int[] lScores = new int[8];
+
+        [UdonSynced] private ushort rLine = 0;
+        [UdonSynced] private byte rCombo = 0;
+        [UdonSynced] private ushort rTSpin = 0;
+        [UdonSynced] private byte rBTB = 0;
+        [UdonSynced] private ushort rPerfect = 0;
+        [UdonSynced] private string[] rNames = new string[5] { INITIAL_NAME, INITIAL_NAME, INITIAL_NAME, INITIAL_NAME, INITIAL_NAME };
+
+        private int yScore = 0;
 
 
 
 
-        void OnEnable()
+        private void OnEnable()
         {
-            if (isPending) { return; }
-            SendCustomEventDelayedSeconds(nameof(CheckResult), INTERVAL);
-            isPending = true;
+            InitializeYourHighScore();
+
+            if (!isPending)
+            {
+                SendCustomEventDelayedSeconds(nameof(CheckResult), INTERVAL);
+                isPending = true;
+            }
+        }
+
+
+        public override void OnPlayerRestored(VRCPlayerApi player)
+        {
+            if (!player.isLocal) { return; }
+
+            InitializeYourHighScore(true);
+
+            if (!isPending)
+            {
+                SendCustomEventDelayedSeconds(nameof(CheckResult), INTERVAL);
+                isPending = true;
+            }
+        }
+
+
+        private void InitializeYourHighScore(bool isRestoreVerified = false)
+        {
+            yScore = 0;
+            if (Utilities.IsValid(userDataAccessor) && userDataAccessor.EnsureDataFound(isRestoreVerified))
+            {
+                if (userDataAccessor.TryGetYourHighScore(out int value))
+                {
+                    yScore = value;
+                }
+            }
+            UpdateYourHighScoreUI(yScore);
         }
 
 
         public void CheckResult()
         {
-            if (!Utilities.IsValid(adapters) || adapters.Length == 0) { return; }
+            if (!Utilities.IsValid(authorings) || authorings.Length == 0)
+            {
+                isPending = false;
+                return;
+            }
 
             // 予約するか判断
             if (this.gameObject.activeInHierarchy)
@@ -91,41 +134,57 @@ namespace ChuChuGimmicks.UDONTET
 
             bool isChanged = false;
 
-            for (int i = 0; i < adapters.Length; i++)
+            for (int i = 0; i < authorings.Length; i++)
             {
-                if (!Utilities.IsValid(adapters[i])) { continue; }
-                if (adapters[i].inGameManager.CurrentGameState == GameState.Playing) { continue; }
-
-                int playId = adapters[i].inGameManager.GetPlayID();
-                string playerName = adapters[i].inGameManager.GetPlayerName();
-                int score = adapters[i].inGameManager.GetScore();
+                if (!Utilities.IsValid(authorings[i])) { continue; }
+                if (authorings[i].main.CurrGameState == GameState.Playing) { continue; }
 
                 // Play ID が更新されていなければスキップ（新しいゲームが始まっていないため）
+                int playId = authorings[i].main.GetPlayID();
                 if (playIds[i] >= playId) { continue; }
 
+                authorings[i].main.GetGameStats(out string playerName, out int score, out ushort line, out byte combo, out ushort tSpin, out byte bTB, out ushort perfect);
+                UpdateYourHighScore(playerName, score);
                 bool isChangedLeaderboard = UpdateLeaderboard(playerName, score);
-                bool isChangedRecords = UpdateRecords(i, playerName);
+                bool isChangedRecords = UpdateRecords(playerName, line, combo, tSpin, bTB, perfect);
 
                 if (isChangedLeaderboard || isChangedRecords)
                 {
                     isChanged = true;
                 }
             }
-
             return isChanged;
+        }
+
+
+        private void UpdateYourHighScore(string name, int score)
+        {
+            if (name != Networking.LocalPlayer.displayName) { return; }
+            if (score < yScore) { return; }
+
+            yScore = score;
+            if (Utilities.IsValid(userDataAccessor)) { userDataAccessor.TrySetYourHighScore(yScore); }
+
+            UpdateYourHighScoreUI(yScore);
+        }
+
+
+        private void UpdateYourHighScoreUI(int score)
+        {
+            yScoreText.text = $"{score}";
         }
 
 
         private bool UpdateLeaderboard(string name, int score)
         {
-            if (score <= scores[scores.Length - 1]) { return false; }
+            if (score <= lScores[lScores.Length - 1]) { return false; }
 
             bool isChanged = false;
 
             int retryIndex = -1;
-            for (int i = 0; i < playerNames.Length; i++)
+            for (int i = 0; i < lNames.Length; i++)
             {
-                if (playerNames[i] == name)
+                if (lNames[i] == name)
                 {
                     retryIndex = i;
                     break;
@@ -136,30 +195,30 @@ namespace ChuChuGimmicks.UDONTET
             if (retryIndex >= 0)
             {
                 // 自分のスコアが更新されていなければ何もしない
-                if (score <= scores[retryIndex]) { return isChanged; }
+                if (score <= lScores[retryIndex]) { return isChanged; }
 
-                for (int i = retryIndex; i < scores.Length - 1; i++)
+                for (int i = retryIndex; i < lScores.Length - 1; i++)
                 {
-                    playerNames[i] = playerNames[i + 1];
-                    scores[i] = scores[i + 1];
+                    lNames[i] = lNames[i + 1];
+                    lScores[i] = lScores[i + 1];
                 }
-                playerNames[scores.Length - 1] = string.Empty;
-                scores[scores.Length - 1] = 0;
+                lNames[lScores.Length - 1] = string.Empty;
+                lScores[lScores.Length - 1] = 0;
             }
 
             // 新しいスコアを入れる
-            for (int i = 0; i < scores.Length; i++)
+            for (int i = 0; i < lScores.Length; i++)
             {
                 // スコアが入る場所を探す
-                if (score <= scores[i]) { continue; }
+                if (score <= lScores[i]) { continue; }
 
-                for (int j = scores.Length - 1; j > i; j--)
+                for (int j = lScores.Length - 1; j > i; j--)
                 {
-                    playerNames[j] = playerNames[j - 1];
-                    scores[j] = scores[j - 1];
+                    lNames[j] = lNames[j - 1];
+                    lScores[j] = lScores[j - 1];
                 }
-                playerNames[i] = name;
-                scores[i] = score;
+                lNames[i] = name;
+                lScores[i] = score;
 
                 isChanged = true;
                 break;
@@ -172,49 +231,46 @@ namespace ChuChuGimmicks.UDONTET
 
         private void UpdateLeaderboardUI()
         {
-            for (int i = 0; i < nameLabels.Length; i++)
+            for (int i = 0; i < lNameTexts.Length; i++)
             {
-                nameLabels[i].text = $"{i}.  {playerNames[i]}";
-                scoreLabels[i].text = $"{scores[i]}";
+                lNameTexts[i].text = $"{i}.  {lNames[i]}";
+                lScoreTexts[i].text = $"{lScores[i]}";
             }
         }
 
 
-        private bool UpdateRecords(int idx, string name)
+        private bool UpdateRecords(string name, ushort line, byte combo, ushort tSpin, byte bTB, ushort perfect)
         {
-            if (recordLabels.Length < 5) { return false; }
-
             bool isChanged = false;
 
-            ushort lines    = adapters[idx].inGameManager.GetLineStat();
-            byte   combo    = adapters[idx].inGameManager.GetComboStat();
-            ushort tSpins   = adapters[idx].inGameManager.GetTSpinStat();
-            byte   bTB      = adapters[idx].inGameManager.GetBTBStat();
-            ushort perfects = adapters[idx].inGameManager.GetPerfectStat();
-
-            if (lines > mostLines)
+            if (line > rLine)
             {
-                mostLines = lines;
+                rLine = line;
+                rNames[0] = name;
                 isChanged = true;
             }
-            if (combo > mostCombo && combo > 1)
+            if (combo > rCombo && combo > 1)
             {
-                mostCombo = combo;
+                rCombo = combo;
+                rNames[1] = name;
                 isChanged = true;
             }
-            if (tSpins > mostTSpins)
+            if (tSpin > rTSpin)
             {
-                mostTSpins = tSpins;
+                rTSpin = tSpin;
+                rNames[2] = name;
                 isChanged = true;
             }
-            if (bTB > mostBTB && bTB > 1)
+            if (bTB > rBTB && bTB > 1)
             {
-                mostBTB = bTB;
+                rBTB = bTB;
+                rNames[3] = name;
                 isChanged = true;
             }
-            if (perfects > mostPerfects)
+            if (perfect > rPerfect)
             {
-                mostPerfects = perfects;
+                rPerfect = perfect;
+                rNames[4] = name;
                 isChanged = true;
             }
 
@@ -225,12 +281,15 @@ namespace ChuChuGimmicks.UDONTET
 
         private void UpdateRecordsUI()
         {
-            if (recordLabels == null || recordLabels.Length < 5) { return; }
-            recordLabels[0].text = $"{mostLines}";
-            recordLabels[1].text = $"{Mathf.Max(mostCombo - 1, 0)}";
-            recordLabels[2].text = $"{mostTSpins}";
-            recordLabels[3].text = $"{Mathf.Max(mostBTB - 1, 0)}";
-            recordLabels[4].text = $"{mostPerfects}";
+            rValueTexts[0].text = $"{rLine}";
+            rValueTexts[1].text = $"{Mathf.Max(rCombo - 1, 0)}";
+            rValueTexts[2].text = $"{rTSpin}";
+            rValueTexts[3].text = $"{Mathf.Max(rBTB - 1, 0)}";
+            rValueTexts[4].text = $"{rPerfect}";
+            for (int i = 0; i < rNameTexts.Length; i++)
+            {
+                rNameTexts[i].text = $"{rNames[i]}";
+            }
         }
 
 
