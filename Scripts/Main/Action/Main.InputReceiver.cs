@@ -16,10 +16,10 @@ namespace ChuChuGimmicks.UDONTET
         private AxisState InputStateRY { get; set; } = AxisState.Neutral;
 
         // private ButtonState InputStateUseL  { get; set; }  = ButtonState.Released;
-        private ButtonState InputStateUseR  { get; set; }  = ButtonState.Released;
+        private ButtonState InputStateUseR  { get; set; } = ButtonState.Released;
         private ButtonState InputStateGrabL { get; set; } = ButtonState.Released;
         private ButtonState InputStateGrabR { get; set; } = ButtonState.Released;
-        private ButtonState InputStateJump  { get; set; }  = ButtonState.Released;
+        private ButtonState InputStateJump  { get; set; } = ButtonState.Released;
 
 
 
@@ -238,8 +238,8 @@ namespace ChuChuGimmicks.UDONTET
 
         private AxisState _INR_GetAxisState(float value)
         {
-            if (value <= -_INR_STICK_THRESHOLD) return AxisState.Negative;
-            if (value >= _INR_STICK_THRESHOLD)  return AxisState.Positive;
+            if (value <= -_INR_STICK_THRESHOLD) { return AxisState.Negative; }
+            if (value >= _INR_STICK_THRESHOLD)  { return AxisState.Positive; }
             return AxisState.Neutral;
         }
 
