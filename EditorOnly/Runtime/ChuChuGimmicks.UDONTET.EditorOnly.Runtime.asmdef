@@ -1,0 +1,19 @@
+{
+    "name": "ChuChuGimmicks.UDONTET.EditorOnly.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:99835874ee819da44948776e0df4ff1d",
+        "GUID:6e9c6119ac4eb334284fb7b4bc6d1f05",
+        "GUID:d306b3926f53bd4488fabe416ea6c4cf",
+        "GUID:d75d9d93ac4ae714a900e2761c79c6a7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

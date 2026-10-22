@@ -1,11 +1,8 @@
-# いったん全部無視
-*
+Fonts/
+Fonts.meta
 
-# フォルダ構造は辿れるようにする
-!*/
+Mterials/
+Materials.meta
 
-# Scriptフォルダだけ許可
-!Scripts/
-
-# Script配下の対象拡張子を許可
-!Scripts/**/*.cs
+Sprites/
+Sprites.meta
