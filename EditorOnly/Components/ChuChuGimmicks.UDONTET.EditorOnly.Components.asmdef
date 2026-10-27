@@ -1,5 +1,5 @@
 {
-    "name": "ChuChuGimmicks.UDONTET.EditorOnly.Runtime",
+    "name": "ChuChuGimmicks.UDONTET.EditorOnly.Components",
     "rootNamespace": "",
     "references": [
         "GUID:99835874ee819da44948776e0df4ff1d",

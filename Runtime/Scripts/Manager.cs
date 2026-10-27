@@ -22,7 +22,7 @@ namespace ChuChuGimmicks.UDONTET.Runtime
 
 
         private const float INTERVAL = 2.0f;
-        private const string INITIAL_NAME = "--------";
+        private const string INITIAL_NAME = "----";
 
         [SerializeField] private Main[] _mains;
         [SerializeField] private StatsBoard[] _statsBoards;

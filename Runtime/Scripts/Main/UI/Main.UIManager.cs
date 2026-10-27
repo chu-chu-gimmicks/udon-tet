@@ -17,7 +17,7 @@ namespace ChuChuGimmicks.UDONTET.Runtime
         private const string      _UIM_COMBO_TEXT   = "COMBO";
         private readonly string[] _UIM_TSPIN_TEXT   = { "T-SPIN MINI", "T-SPIN SINGLE", "T-SPIN DOUBLE", "T-SPIN TRIPLE" };
         private const string      _UIM_BTB_TEXT     = "B2B";
-        private const string      _UIM_PERFECT_TEXT = "PERFECT";
+        private const string      _UIM_PERFECT_TEXT = "PERFECT CLEAR";
 
         // Game Over
         private const float _UIM_GAME_OVER_DELAY = 2.5f;

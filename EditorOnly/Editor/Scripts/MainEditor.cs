@@ -92,6 +92,7 @@ namespace ChuChuGimmicks.UDONTET.EditorOnly
                 "追加・削除は UDON TET - Manager オブジェクトから行ってください。",
                 MessageType.Info
             );
+            EditorGUILayout.Space(EditorGUIUtility.singleLineHeight);
 
             EditorGUI.BeginDisabledGroup(true);
             _isOpen = EditorGUILayout.Foldout(_isOpen, "References", true);
